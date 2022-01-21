@@ -42,7 +42,7 @@ function Navbar() {
       <CssBaseline />
       <Toolbar>
         {/* <Link to="/" style={{ textDecoration: "none", color: "inherit" }}> */}
-        <Typography variant="h4" className={classes.logo}>
+        <Typography style={{ fontSize: "31px" }} className={classes.logo}>
           Selling Network
         </Typography>
         {/* </Link> */}
