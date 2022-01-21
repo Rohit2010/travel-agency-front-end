@@ -41,11 +41,11 @@ function Navbar() {
     <AppBar style={{ position: "fixed", left: "0px", right: "0px" }}>
       <CssBaseline />
       <Toolbar>
-        <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
-          <Typography variant="h4" className={classes.logo}>
-            Selling Network
-          </Typography>
-        </Link>
+        {/* <Link to="/" style={{ textDecoration: "none", color: "inherit" }}> */}
+        <Typography variant="h4" className={classes.logo}>
+          Selling Network
+        </Typography>
+        {/* </Link> */}
         {isMobile ? (
           <DrawerComponent />
         ) : (
