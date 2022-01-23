@@ -2,6 +2,21 @@ import React, { useState, useEffect } from "react";
 import { Grid } from "@material-ui/core";
 import Controls from "./controls/Controls";
 import { useForm, Form } from "./useForm";
+import InputLabel from "@material-ui/core/InputLabel";
+import FormHelperText from "@material-ui/core/FormHelperText";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
+import NativeSelect from "@material-ui/core/NativeSelect";
+import { makeStyles } from "@material-ui/core/styles";
+const useStyles = makeStyles((theme) => ({
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
+}));
 
 const initialFValues = {
   id: 0,
@@ -20,6 +35,20 @@ const initialFValues = {
 };
 
 export default function ItemForm(props) {
+  const classes = useStyles();
+  const [state, setState] = React.useState({
+    age: "",
+    name: "hai",
+  });
+
+  const handleChange = (event) => {
+    const name = event.target.name;
+    setState({
+      ...state,
+      [name]: event.target.value,
+    });
+  };
+
   const { addOrEdit, recordForEdit } = props;
 
   const validate = (fieldValues = values) => {
@@ -69,13 +98,24 @@ export default function ItemForm(props) {
     <Form style={{ marginLeft: "50px" }} onSubmit={handleSubmit}>
       <Grid container>
         <Grid item xs={6}>
-          <Controls.Input
-            name="Brand"
-            label="Brand"
-            value={values.Brand}
-            onChange={handleInputChange}
-            error={errors.Brand}
-          />
+          <FormControl variant="outlined" className={classes.formControl}>
+            <InputLabel htmlFor="outlined-age-native-simple">Brand</InputLabel>
+            <Select
+              native
+              name="Brand"
+              value={values.Brand}
+              onChange={handleInputChange}
+              label="Brand"
+              error={errors.Brand}
+            >
+              <option aria-label="None" value="" />
+              <option value={10}>Zellbury</option>
+              <option value={20}>Khaadi</option>
+              <option value={30}>Generation</option>
+              <option value={40}>Limelight</option>
+            </Select>
+          </FormControl>
+
           <Controls.Input
             // required
             label="Product Name"

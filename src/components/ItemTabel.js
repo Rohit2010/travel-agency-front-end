@@ -195,11 +195,18 @@ const rows = [
 
 function ItemTabel() {
   return (
-    <div style={{ height: "493px", width: "80vw" }}>
+    <div
+      style={{
+        height: "470px",
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+      }}
+    >
       <DataGrid
         rows={rows}
         columns={columns}
-        pageSize={7}
+        pageSize={6}
         checkboxSelection
         disableSelectionOnClick
       />

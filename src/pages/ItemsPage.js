@@ -17,12 +17,22 @@ function ItemsPage() {
           marginTop: "110px",
           width: "100%",
           display: "flex",
-          justifyContent: "space-evenly",
+          justifyContent: "space-between",
         }}
       >
         {/* Table code will be here in this div */}
-        <Typography style={{ marginLeft: "30px" }}>
-          <ItemTabel />
+        <Typography
+          style={{
+            marginLeft: "42vw",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <Typography
+            style={{ fontWeight: "bold", fontSize: "25px", color: "#505152" }}
+          >
+            Items Collection
+          </Typography>
         </Typography>
 
         <Typography
@@ -42,6 +52,9 @@ function ItemsPage() {
             Add item
           </Button>
         </Typography>
+      </Typography>
+      <Typography style={{ margin: "20px" }}>
+        <ItemTabel />
       </Typography>
       <Popup
         title="Enter your Item specfication"
