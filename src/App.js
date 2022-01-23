@@ -4,7 +4,8 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/home";
 import Report from "./pages/Report";
 import ItemsPage from "./pages/ItemsPage";
-import Order from "./pages/Order";
+import OrderPage from "./pages/OrderPage";
+
 function App() {
   return (
     <Router>
@@ -13,7 +14,7 @@ function App() {
         <Route exact path="/" component={Home} />
         <Route path="/Report" component={Report} />
         <Route path="/ItemsPage" component={ItemsPage} />
-        <Route path="/Order" component={Order} />
+        <Route path="/OrderPage" component={OrderPage} />
       </Switch>
     </Router>
   );

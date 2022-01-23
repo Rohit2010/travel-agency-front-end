@@ -48,7 +48,7 @@ function DrawerComponent() {
           <Divider />
           <ListItem onClick={() => setOpenDrawer(false)}>
             <ListItemText>
-              <Link to="/Order" className={classes.link}>
+              <Link to="/OrderPage" className={classes.link}>
                 Order
               </Link>
             </ListItemText>

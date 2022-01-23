@@ -56,7 +56,7 @@ function Navbar() {
             <Link to="/ItemsPage" className={classes.link}>
               Items
             </Link>
-            <Link to="/Order" className={classes.link}>
+            <Link to="/OrderPage" className={classes.link}>
               Order
             </Link>
             <Link to="/Report" className={classes.link}>
