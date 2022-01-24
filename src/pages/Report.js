@@ -1,113 +1,218 @@
-import React from "react";
+import React, { useState } from "react";
 import { Typography } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import Button from "@mui/material/Button";
+import ReportOfTable from "../components/ReportOfTable";
 
 function Report() {
+  const [openTable, setOpenTable] = useState(false);
+  const [reportByOrderNo, setReportByOrderNo] = React.useState("");
+  const [open1, setOpen1] = React.useState(false);
+  const [reportByBKNo, setReportByBKNo] = React.useState("");
+  const [open2, setOpen2] = React.useState(false);
+  const [reportByBrand, setReportByBrand] = React.useState("");
+  const [open3, setOpen3] = React.useState(false);
+
+  const handleChange1 = (event) => {
+    setReportByOrderNo(event.target.value);
+    setOpenTable(true);
+  };
+  const handleChange2 = (event) => {
+    setReportByBKNo(event.target.value);
+    setOpenTable(true);
+  };
+  const handleChange3 = (event) => {
+    setReportByBrand(event.target.value);
+    setOpenTable(true);
+  };
+
+  const handleClose1 = () => {
+    setOpen1(false);
+  };
+
+  const handleOpen1 = () => {
+    setOpen1(true);
+  };
+  const handleClose2 = () => {
+    setOpen2(false);
+  };
+
+  const handleOpen2 = () => {
+    setOpen2(true);
+  };
+  const handleClose3 = () => {
+    setOpen3(false);
+  };
+
+  const handleOpen3 = () => {
+    setOpen3(true);
+  };
 
   return (
     <>
       <Typography
         style={{
-          marginTop: "110px",
+          marginTop: "90px",
           display: "flex",
           justifyContent: "space-evenly",
         }}
       >
-      
-        <Button
-          style={{
-            fontWeight: "bold",
-            color: "#505152",
-            textTransform: "none",
-            borderRadius: "20px",
-            fontSize: "17px",
-          }}
-          variant="outlined"
-        >
-          Report by order No
-        </Button>
-        <Button
-          style={{
-            fontWeight: "bold",
-            color: "#505152",
-            textTransform: "none",
-            borderRadius: "20px",
-            fontSize: "17px",
-          }}
-          variant="outlined"
-        >
-          Report by BK No
-        </Button>
-        <Button
-          style={{
-            fontWeight: "bold",
-            color: "#505152",
-            textTransform: "none",
-            borderRadius: "20px",
-            fontSize: "17px",
-          }}
-          variant="outlined"
-        >
-          Report by Brand
-        </Button>
+        <FormControl sx={{ m: 1, minWidth: 190 }}>
+          <InputLabel id="demo-controlled-open-select-label">
+            Report by order no
+          </InputLabel>
+          <Select
+            style={{
+              borderRadius: "25px",
+              height: "54px",
+              color: "#505152",
+            }}
+            labelId="demo-controlled-open-select-label"
+            id="demo-controlled-open-select"
+            open={open1}
+            onClose={handleClose1}
+            onOpen={handleOpen1}
+            value={reportByOrderNo}
+            label="Report by order no"
+            onChange={handleChange1}
+          >
+            <MenuItem value="">
+              <em>None</em>
+            </MenuItem>
+            <MenuItem value={10}>All order</MenuItem>
+            <MenuItem value={20}>All customer</MenuItem>
+            <MenuItem value={30}>All state</MenuItem>
+          </Select>
+        </FormControl>
+
+        <FormControl sx={{ m: 1, minWidth: 190 }}>
+          <InputLabel id="demo-controlled-open-select-label">
+            Report by bk no
+          </InputLabel>
+          <Select
+            style={{
+              borderRadius: "25px",
+              height: "54px",
+              color: "#505152",
+            }}
+            labelId="demo-controlled-open-select-label"
+            id="demo-controlled-open-select"
+            open={open2}
+            onClose={handleClose2}
+            onOpen={handleOpen2}
+            value={reportByBKNo}
+            label="Report by bk no"
+            onChange={handleChange2}
+          >
+            <MenuItem value="">
+              <em>None</em>
+            </MenuItem>
+            <MenuItem value={10}>All bk</MenuItem>
+            <MenuItem value={20}>All customer</MenuItem>
+            <MenuItem value={30}>All state</MenuItem>
+          </Select>
+        </FormControl>
+
+        <FormControl sx={{ m: 1, minWidth: 190 }}>
+          <InputLabel id="demo-controlled-open-select-label">
+            Report by brand
+          </InputLabel>
+          <Select
+            style={{
+              borderRadius: "25px",
+              height: "54px",
+              color: "#505152",
+            }}
+            labelId="demo-controlled-open-select-label"
+            id="demo-controlled-open-select"
+            open={open3}
+            onClose={handleClose3}
+            onOpen={handleOpen3}
+            value={reportByBrand}
+            label="Report by brand"
+            onChange={handleChange3}
+          >
+            <MenuItem value="">
+              <em>None</em>
+            </MenuItem>
+            <MenuItem value={10}>All brands</MenuItem>
+            <MenuItem value={20}>All customer</MenuItem>
+            <MenuItem value={30}>All state</MenuItem>
+          </Select>
+        </FormControl>
       </Typography>
       <Typography
         style={{
-          marginTop: "40px",
+          marginTop: "30px",
           display: "flex",
           justifyContent: "space-evenly",
-          marginLeft: "70px",
-          marginRight: "70px",
-          // convert these pixls to perncentage
+          marginLeft: "5.124450951683748vw",
+          marginRight: "5.124450951683748vw",
         }}
       >
         <Typography>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga libero
-          voluptatem eaque cumque quod officiis perferendis, omnis perspiciatis.
-          Sed animi a officiis, ratione, molestiae culpa, impedit molestias ab
-          vero quia similique ipsum illum quae mollitia voluptatibus aliquid eum
-          fugiat. Hic culpa possimus quod sint veniam, perspiciatis blanditiis
-          esse? Dicta, veniam. In maiores, repellat labore delectus dolore dolor
-          facilis esse quibusdam blanditiis eveniet magni non neque nihil alias
-          deserunt impedit ut minus ducimus rerum quod porro? Aliquam omnis
-          necessitatibus ab cupiditate enim? Nobis, sapiente rerum! Assumenda
-          perspiciatis inventore repudiandae odio. Et aspernatur, corporis rem
-          voluptatibus fugit soluta ab commodi aliquam id atque ipsa. Animi quo
-          saepe odit illum quae nulla, facilis tempore et? Totam ad earum fugiat
-          numquam debitis harum minus sequi illum ullam molestiae perferendis
-          amet distinctio eaque consequatur vero dolores quibusdam eveniet, vel
-          accusamus recusandae modi necessitatibus iure. Unde, harum.
-          Repudiandae illo reiciendis, debitis laboriosam doloribus dolorum
-          minima cupiditate rem repellat? Quo quam laudantium libero itaque
-          doloribus quasi error velit ipsum repellat labore! Quos assumenda
-          vitae ex sit sapiente incidunt debitis obcaecati enim temporibus
-          quibusdam. Ea veritatis a optio illum eveniet qui suscipit,
-          reprehenderit libero et obcaecati quam quaerat sunt, voluptates sed
-          similique quae temporibus magni laborum dolores. Error repellendus sit
-          repudiandae possimus. Explicabo aut iusto rerum soluta quibusdam
-          necessitatibus excepturi unde quaerat recusandae tenetur ab hic
-          assumenda sunt minus accusamus sapiente architecto, vel sequi rem
-          consequatur quis reiciendis error at inventore! Suscipit similique
-          cumque blanditiis earum tenetur natus iure ipsa molestiae odit dicta
-          possimus, voluptates nihil, ut eveniet delectus officia, hic
-          consequatur quo. In ut debitis rerum ex cumque sapiente iste dolorum
-          eligendi, animi quam pariatur minima est error sunt aperiam voluptatem
-          accusantium sequi atque fugit! Quas veritatis sed ratione illum esse
-          iste atque deleniti mollitia nostrum eos repellendus provident quidem,
-          facilis qui blanditiis! Architecto quisquam eveniet ex.
+          {openTable ? (
+            <ReportOfTable />
+          ) : (
+            <Typography style={{ fontFamily: "sans-serif", fontSize: "17px" }}>
+              Table report will goes here
+            </Typography>
+          )}
         </Typography>
       </Typography>
       <Typography
         style={{
+          marginTop: "15px",
           display: "flex",
-          justifyContent: "flex-end",
-          marginLeft: "70px",
-          marginRight: "70px",
+          justifyContent: "space-between",
+          marginLeft: "13.124450951683748vw",
+          marginRight: "13.124450951683748vw",
+          marginBottom: "25px",
         }}
       >
         <Typography>
+          {openTable ? (
+            <>
+              <Button
+                style={{
+                  textTransform: "none",
+                  borderRadius: "20px",
+                  height: "35px",
+                }}
+                variant="contained"
+                color="primary"
+                onClick={() => setOpenTable(false)}
+              >
+                Clear Report
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                style={{
+                  textTransform: "none",
+                  borderRadius: "20px",
+                  height: "35px",
+                }}
+                variant="contained"
+                color="primary"
+                onClick={() => setOpenTable(true)}
+              >
+                Report
+              </Button>
+            </>
+          )}
+        </Typography>
+        <Typography>
           <Button
-            style={{ textTransform: "none", borderRadius: "20px" }}
+            style={{
+              textTransform: "none",
+              borderRadius: "20px",
+              height: "35px",
+            }}
             variant="contained"
             color="primary"
           >
@@ -118,6 +223,7 @@ function Report() {
               marginLeft: "10px",
               textTransform: "none",
               borderRadius: "20px",
+              height: "35px",
             }}
             variant="contained"
             color="primary"
