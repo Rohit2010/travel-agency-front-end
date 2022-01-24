@@ -5,8 +5,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
 import Popup from "../components/Popup";
-import ItemForm from "../components/ItemForm";
-import ItemTabel from "../components/ItemTabel";
+import ItemForm from "../components/OrderForm";
+import ItemTabel from "../components/OrderTabel";
 
 function ItemsPage() {
   const [openPopup, setOpenPopup] = useState(false);
@@ -57,7 +57,7 @@ function ItemsPage() {
         <ItemTabel />
       </Typography>
       <Popup
-        title="Enter your Item specfication"
+        title="Enter your Item Specfication"
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
       >

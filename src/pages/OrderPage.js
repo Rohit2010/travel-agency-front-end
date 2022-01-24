@@ -54,7 +54,7 @@ function OrderPage() {
         <OrderTabel />
       </Typography>
       <Popup
-        title="Enter your Order specfication"
+        title="Enter your Order Specfication"
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
       >
