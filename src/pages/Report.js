@@ -9,7 +9,7 @@ import { styled } from "@mui/system";
 import TablePaginationUnstyled from "@mui/base/TablePaginationUnstyled";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
-import {  useEffect } from "react";
+import { useEffect } from "react";
 import ReactHTMLTableToExcel from "react-html-table-to-excel";
 
 function createData(ProductName, QNT, cost, total, state, totalsize) {
@@ -272,8 +272,13 @@ function Report() {
             // <ReportOfTable />
             <div>
               {" "}
-              <Root sx={{ maxWidth: "100%", width: 1000 }}>
-                <table aria-label="custom pagination table">
+              <Root
+                sx={{
+                  maxWidth: "100%",
+                  width: 1000,
+                }}
+              >
+                <table aria-label="custom pagination table" id="table-to-xls">
                   <thead>
                     <tr>
                       <th>Product Name</th>
@@ -281,7 +286,7 @@ function Report() {
                       <th>Cost</th>
                       <th>total</th>
                       <th>state</th>
-                      <th>state size</th>
+                      <th>total size</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -387,7 +392,8 @@ function Report() {
                 style={{
                   textTransform: "none",
                   borderRadius: "20px",
-                  height: "35px",
+                  height: "38px",
+                  marginTop: "-15px",
                 }}
                 variant="contained"
                 color="primary"
@@ -403,7 +409,9 @@ function Report() {
             style={{
               textTransform: "none",
               borderRadius: "20px",
-              height: "35px",
+              height: "38px",
+              marginTop: "-15px",
+              marginRight: "4px",
             }}
             variant="contained"
             color="primary"
@@ -411,7 +419,7 @@ function Report() {
           >
             Export to PDF
           </Button>
-          <Button
+          {/* <Button
             style={{
               marginLeft: "10px",
               textTransform: "none",
@@ -423,7 +431,16 @@ function Report() {
             onClick={downloadXLSX}
           >
             Export to excel
-          </Button>
+          </Button> */}
+
+          <ReactHTMLTableToExcel
+            id="test-table-xls-button"
+            className="download-table-xls-button btn btn-primary mb-3 rounded-pill h-70"
+            table="table-to-xls"
+            filename="tablexls"
+            sheet="tablexls"
+            buttonText="Export to excel"
+          />
         </Typography>
       </Typography>
     </>
