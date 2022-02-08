@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { DataGrid } from "@material-ui/data-grid";
+import axios from "axios";
 
 const columns = [
   { field: "id", headerName: "ID", width: 95 },
@@ -194,6 +195,31 @@ const rows = [
 ];
 
 function OrderTabel() {
+  const [data, setData] = React.useState([]);
+  useEffect(() => {
+    axios({
+      method: "get",
+      url: "http://localhost:8800/api/ItemManipulate/get",
+    }).then((response) => {
+      let datatoprint = response.data;
+      for (const element of datatoprint) {
+        element.id = element._id;
+        element.ProductName = element.productName;
+        element.Brand = element.brand;
+        element.description = element.productDescription;
+        element.TradeName = element.tradeName;
+        element.pcsinbox = element.pcsInbox;
+        element.minimumOrder = element.minimumOrder;
+        element.cost = element.cost;
+        element.Long = element.long;
+        element.Width = element.width;
+        element.Height = element.height;
+        element.boxSize = element.boxSize;
+      }
+      setData(datatoprint);
+    });
+  }, []);
+
   return (
     <div
       style={{
@@ -204,7 +230,7 @@ function OrderTabel() {
       }}
     >
       <DataGrid
-        rows={rows}
+        rows={data}
         columns={columns}
         pageSize={6}
         checkboxSelection

@@ -8,6 +8,15 @@ import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import NativeSelect from "@material-ui/core/NativeSelect";
 import { makeStyles } from "@material-ui/core/styles";
+import "date-fns";
+// import Grid from "@material-ui/core/Grid";
+import DateFnsUtils from "@date-io/date-fns";
+import {
+  MuiPickersUtilsProvider,
+  KeyboardTimePicker,
+  KeyboardDatePicker,
+} from "@material-ui/pickers";
+
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
@@ -20,21 +29,27 @@ const useStyles = makeStyles((theme) => ({
 
 const initialFValues = {
   id: 0,
-  Brand: "",
   ProductName: "",
-  Productdescription: "",
-  pcsinbox: "",
-  TradeName: "",
-  minimumorder: "",
+  QNT: "",
+  total: "",
+  OrderName: "",
+  state: "",
   cost: "",
-  Long: "",
-  Width: "",
-  Height: "",
-  boxsize: "",
-  gender: "male",
+  partno: "",
+  TotalSize: "",
+  bkno: "",
+  Notes: "",
 };
 
 export default function OrderForm(props) {
+  const [selectedDate, setSelectedDate] = React.useState(
+    new Date("2014-08-18T21:11:54")
+  );
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+  };
+
   const classes = useStyles();
   const [state, setState] = React.useState({
     age: "",
@@ -53,30 +68,27 @@ export default function OrderForm(props) {
 
   const validate = (fieldValues = values) => {
     let temp = { ...errors };
-    if ("Brand" in fieldValues)
-      temp.Brand = fieldValues.Brand ? "" : "This field is required.";
     if ("ProductName" in fieldValues)
       temp.ProductName = fieldValues.ProductName
         ? ""
         : "This field is required.";
-    if ("Productdescription" in fieldValues)
-      temp.Productdescription = fieldValues.Productdescription;
-    if ("pcsinbox" in fieldValues)
-      temp.pcsinbox = fieldValues.pcsinbox ? "" : "This field is required.";
-    if ("TradeName" in fieldValues)
-      temp.TradeName = fieldValues.TradeName ? "" : "This field is required.";
-    if ("minimumorder" in fieldValues)
-      temp.minimumorder = fieldValues.minimumorder
-        ? ""
-        : "This field is required.";
+    if ("QNT" in fieldValues)
+      temp.QNT = fieldValues.QNT ? "" : "This field is required.";
+    if ("total" in fieldValues)
+      temp.total = fieldValues.total ? "" : "This field is required.";
+    if ("TotalSize" in fieldValues)
+      temp.TotalSize = fieldValues.TotalSize ? "" : "This field is required.";
+    if ("OrderName" in fieldValues)
+      temp.OrderName = fieldValues.OrderName ? "" : "This field is required.";
+    if ("state" in fieldValues)
+      temp.state = fieldValues.state ? "" : "This field is required.";
     if ("cost" in fieldValues)
       temp.cost = fieldValues.cost ? "" : "This field is required.";
-    if ("Long" in fieldValues)
-      temp.Long = fieldValues.Long ? "" : "This field is required.";
-    if ("Width" in fieldValues)
-      temp.Width = fieldValues.Width ? "" : "This field is required.";
-    if ("Height" in fieldValues)
-      temp.Height = fieldValues.Height ? "" : "This field is required.";
+    if ("Notes" in fieldValues) temp.Notes = fieldValues.Notes;
+    if ("partno" in fieldValues)
+      temp.partno = fieldValues.partno ? "" : "This field is required.";
+    if ("Totalboxes" in fieldValues) temp.Totalboxes = fieldValues.Totalboxes;
+    if ("bkno" in fieldValues) temp.bkno = fieldValues.bkno;
     setErrors({
       ...temp,
     });
@@ -89,6 +101,7 @@ export default function OrderForm(props) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log("form is validated");
     if (validate()) {
       addOrEdit(values, resetForm);
     }
@@ -99,14 +112,16 @@ export default function OrderForm(props) {
       <Grid container>
         <Grid item xs={6}>
           <FormControl variant="outlined" className={classes.formControl}>
-            <InputLabel htmlFor="outlined-age-native-simple">Brand</InputLabel>
+            <InputLabel htmlFor="outlined-age-native-simple">
+              Product Name
+            </InputLabel>
             <Select
               native
-              name="Brand"
-              value={values.Brand}
+              name="ProductName"
+              value={values.ProductName}
               onChange={handleInputChange}
-              label="Brand"
-              error={errors.Brand}
+              label="Product Name"
+              error={errors.ProductName}
             >
               <option aria-label="None" value="" />
               <option value={10}>Zellbury</option>
@@ -117,45 +132,125 @@ export default function OrderForm(props) {
           </FormControl>
 
           <Controls.Input
-            // required
-            label="Product Name"
-            name="ProductName"
-            value={values.ProductName}
+            type="Number"
+            label="QNT"
+            name="QNT"
+            value={values.QNT}
             onChange={handleInputChange}
-            error={errors.ProductName}
+            error={errors.QNT}
           />
           <Controls.Input
-            // required
-            label="Product description"
-            name="Productdescription"
-            value={values.Productdescription}
+            type="Number"
+            label="total"
+            name="total"
+            value={values.total}
             onChange={handleInputChange}
-            // error={errors.Productdescription}
+            error={errors.total}
           />
 
-          <Controls.Input
-            label="pcs inbox"
-            type="Number"
-            name="pcsinbox"
-            value={values.pcsinbox}
+          <FormControl variant="outlined" className={classes.formControl}>
+            <InputLabel htmlFor="outlined-age-native-simple">
+              Customer
+            </InputLabel>
+            <Select
+              native
+              name="Customer"
+              value={values.Customer}
+              onChange={handleInputChange}
+              label="Customer"
+              error={errors.ProductName}
+            >
+              <option aria-label="None" value="" />
+              <option value={10}>customer1</option>
+              <option value={20}>customer2</option>
+              <option value={30}>customer3</option>
+              <option value={40}>customer3</option>
+            </Select>
+          </FormControl>
+
+          <FormControl variant="outlined" className={classes.formControl}>
+            <InputLabel htmlFor="outlined-age-native-simple">
+              Select Order Name
+            </InputLabel>
+            <Select
+              native
+              name="OrderName"
+              value={values.OrderName}
+              onChange={handleInputChange}
+              label="Order Name"
+              error={errors.OrderName}
+            >
+              <option aria-label="None" value="" />
+              <option value={10}>order name1</option>
+              <option value={20}>order name2</option>
+              <option value={30}>order name3</option>
+              <option value={40}>order name4</option>
+            </Select>
+          </FormControl>
+
+          {/* <Controls.Input
+            label="Order Name"
+            name="OrderName"
+            value={values.OrderName}
             onChange={handleInputChange}
-            error={errors.pcsinbox}
-          />
-          <Controls.Input
-            label="Trade Name"
-            name="TradeName"
-            value={values.TradeName}
-            onChange={handleInputChange}
-            error={errors.TradeName}
-          />
-          <Controls.Input
-            type="Number"
-            label="minimum order"
-            name="minimumorder"
-            value={values.minimumorder}
-            onChange={handleInputChange}
-            error={errors.minimumorder}
-          />
+            error={errors.OrderName}
+          /> */}
+
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <Grid container justifyContent="space-around">
+              <KeyboardDatePicker
+                required="true"
+                style={{ marginRight: "68px" }}
+                margin="normal"
+                id="date-picker-dialog"
+                label="Pick current date"
+                format="MM/dd/yyyy"
+                value={selectedDate}
+                onChange={handleDateChange}
+                KeyboardButtonProps={{
+                  "aria-label": "change date",
+                }}
+              />
+            </Grid>
+          </MuiPickersUtilsProvider>
+          <FormControl variant="outlined" className={classes.formControl}>
+            <InputLabel htmlFor="outlined-age-native-simple">state</InputLabel>
+            <Select
+              native
+              name="state"
+              value={values.state}
+              onChange={handleInputChange}
+              label="state"
+              error={errors.state}
+            >
+              <option aria-label="None" value="" />
+              <option value={10}>Pending</option>
+              <option value={20}>Available</option>
+              <option value={30}>Shipping</option>
+              <option value={40}>Received</option>
+              <option value={50}>Canceled </option>
+              <option value={60}>Delayed </option>
+              <option value={70}>Archived </option>
+            </Select>
+          </FormControl>
+
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <Grid container justifyContent="space-around">
+              <KeyboardDatePicker
+                required="true"
+                style={{ marginRight: "68px" }}
+                margin="normal"
+                id="date-picker-dialog"
+                label="availability Date"
+                format="MM/dd/yyyy"
+                value={selectedDate}
+                onChange={handleDateChange}
+                KeyboardButtonProps={{
+                  "aria-label": "change date",
+                }}
+              />
+            </Grid>
+          </MuiPickersUtilsProvider>
         </Grid>
         <Grid item xs={6}>
           <Controls.Input
@@ -166,37 +261,98 @@ export default function OrderForm(props) {
             onChange={handleInputChange}
             error={errors.cost}
           />
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <Grid container justifyContent="space-around">
+              <KeyboardDatePicker
+                required="true"
+                style={{ marginRight: "68px" }}
+                margin="normal"
+                id="date-picker-dialog"
+                label="delivery Date"
+                format="MM/dd/yyyy"
+                value={selectedDate}
+                onChange={handleDateChange}
+                KeyboardButtonProps={{
+                  "aria-label": "change date",
+                }}
+              />
+            </Grid>
+          </MuiPickersUtilsProvider>
           <Controls.Input
             type="Number"
-            label="Long"
-            name="Long"
-            value={values.Long}
+            label="Total Size"
+            name="TotalSize"
+            value={values.TotalSize}
             onChange={handleInputChange}
-            error={errors.Long}
+            error={errors.TotalSize}
           />
+
+          <FormControl variant="outlined" className={classes.formControl}>
+            <InputLabel htmlFor="outlined-age-native-simple">
+              Part No
+            </InputLabel>
+            <Select
+              native
+              name="partno"
+              value={values.partno}
+              onChange={handleInputChange}
+              label="state"
+              error={errors.partno}
+            >
+              <option aria-label="None" value="" />
+              <option value={1}>1</option>
+              <option value={2}>2</option>
+              <option value={3}>3</option>
+              <option value={4}>4</option>
+              <option value={5}>5 </option>
+              <option value={6}>6 </option>
+              <option value={7}>7 </option>
+              <option value={8}>8 </option>
+              <option value={9}>9 </option>
+              <option value={10}>10 </option>
+              <option value={11}>11</option>
+              <option value={12}>12</option>
+              <option value={13}>23</option>
+              <option value={14}>14</option>
+              <option value={15}>15 </option>
+              <option value={16}>16 </option>
+              <option value={17}>17 </option>
+              <option value={18}>18 </option>
+              <option value={19}>19 </option>
+              <option value={20}>20 </option>
+            </Select>
+          </FormControl>
+
           <Controls.Input
             type="Number"
-            label="Width"
-            name="Width"
-            value={values.Width}
+            label="Total boxes"
+            name="Totalboxes"
+            value={values.Totalboxes}
             onChange={handleInputChange}
-            error={errors.Width}
           />
+          <FormControl variant="outlined" className={classes.formControl}>
+            <InputLabel htmlFor="outlined-age-native-simple">BK NO</InputLabel>
+            <Select
+              native
+              name="bkno"
+              value={values.bkno}
+              onChange={handleInputChange}
+              label="bkno"
+            >
+              <option aria-label="None" value="" />
+              <option value={1}>BK NO1</option>
+              <option value={2}>BK NO2</option>
+              <option value={3}>BK NO3</option>
+              <option value={4}>BK NO3</option>
+              <option value={5}>BK NO4 </option>
+              <option value={6}>BK NO5 </option>
+            </Select>
+          </FormControl>
           <Controls.Input
-            type="Number"
-            label="Height"
-            name="Height"
-            value={values.Height}
+            label="Notes"
+            name="Notes"
+            value={values.Notes}
             onChange={handleInputChange}
-            error={errors.Height}
-          />
-          <Controls.Input
-            type="Float"
-            label="box size(M)"
-            name="boxsize"
-            value={values.boxsize}
-            onChange={handleInputChange}
-            error={errors.boxsize}
           />
 
           <div
@@ -206,7 +362,13 @@ export default function OrderForm(props) {
               marginTop: "15px",
             }}
           >
-            <Controls.Button type="submit" text="Save" />
+            <Controls.Button
+              // type="submit"
+              text="Save"
+              onClick={() => {
+                console.log("form is submitted through button");
+              }}
+            />
             <Controls.Button text="Reset" color="default" onClick={resetForm} />
           </div>
         </Grid>
