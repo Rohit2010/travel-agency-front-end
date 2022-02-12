@@ -37,6 +37,17 @@ const initialFValues = {
 
 export default function ItemForm(props) {
   const classes = useStyles();
+  const [brandData, setBrandData] = React.useState([]);
+  useEffect(() => {
+    axios({
+      method: "get",
+      url: "http://localhost:8800/api/AddBrand/get",
+    }).then((response) => {
+      console.log(response.data);
+      setBrandData(response.data);
+    });
+  }, []);
+
   const [state, setState] = React.useState({
     age: "",
     name: "hai",
@@ -152,10 +163,17 @@ export default function ItemForm(props) {
               error={errors.Brand}
             >
               <option aria-label="None" value="" />
-              <option value={"Zellbury"}>Zellbury</option>
+              {brandData.map((val, index) => {
+                return (
+                  <option value={val.Brand} key={val._id}>
+                    {val.Brand}
+                  </option>
+                );
+              })}
+              {/* <option value={"Zellbury"}>Zellbury</option>
               <option value={"Khaadi"}>Khaadi</option>
               <option value={"Generation"}>Generation</option>
-              <option value={"Limelight"}>Limelight</option>
+              <option value={"Limelight"}>Limelight</option> */}
             </Select>
           </FormControl>
 

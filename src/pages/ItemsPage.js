@@ -6,10 +6,12 @@ import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
 import Popup from "../components/Popup";
 import ItemForm from "../components/ItemForm";
-import ItemTabel from "../components/OrderTabel";
+import ItemTabel from "../components/ItemTabel";
+import Brand from "../components/formcontrols/Brand";
 
 function ItemsPage() {
   const [openPopup, setOpenPopup] = useState(false);
+  const [brandPopup, setBrandPopup] = useState(false);
   return (
     <>
       <Typography
@@ -34,11 +36,23 @@ function ItemsPage() {
             Items Collection
           </Typography>
         </Typography>
-
         <Typography
           // style={{ float: "right", marginTop: "-20px", marginRight: "5px" }}
-          style={{ marginRight: "30px", marginLeft: "20px" }}
+          style={{ marginRight: "10px", marginLeft: "10px" }}
         >
+          <Button
+            text="Add New Brand"
+            variant="outlined"
+            color="primary"
+            startIcon={<AddIcon />}
+            onClick={() => {
+              setBrandPopup(true);
+            }}
+            style={{ width: "150px" }}
+          >
+            Add Brand
+          </Button>
+
           <Button
             text="Add New"
             variant="outlined"
@@ -62,6 +76,13 @@ function ItemsPage() {
         setOpenPopup={setOpenPopup}
       >
         <ItemForm />
+      </Popup>
+      <Popup
+        title="Enter Brand"
+        openPopup={brandPopup}
+        setOpenPopup={setBrandPopup}
+      >
+        <Brand />
       </Popup>
     </>
   );

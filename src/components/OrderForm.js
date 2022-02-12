@@ -16,6 +16,7 @@ import {
   KeyboardTimePicker,
   KeyboardDatePicker,
 } from "@material-ui/pickers";
+import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -42,9 +43,48 @@ const initialFValues = {
 };
 
 export default function OrderForm(props) {
-  const [selectedDate, setSelectedDate] = React.useState(
-    new Date("2014-08-18T21:11:54")
-  );
+  const [productNameData, setProductNameData] = React.useState([]);
+  const [orderNameData, setOrderNameData] = React.useState([]);
+  const [customerNameData, setCustomerNameData] = React.useState([]);
+  const [costValueForProduct, setCostValueForProduct] = React.useState();
+  function settingCostToProduct(e) {
+    axios({
+      method: "post",
+      url: "http://localhost:8800/api/GetProductNames/getcostforproduct",
+      data: {
+        productName: e.target.value,
+      },
+    }).then((response) => {
+      setCostValueForProduct(response.data);
+    });
+  }
+  useEffect(() => {
+    axios({
+      method: "get",
+      url: "http://localhost:8800/api/GetProductNames/get",
+    }).then((response) => {
+      console.log(response.data);
+      setProductNameData(response.data);
+    });
+    axios({
+      method: "get",
+      url: "http://localhost:8800/api/GetProductNames/getCustomer",
+    }).then((response) => {
+      console.log(response.data);
+      setCustomerNameData(response.data);
+    });
+    axios({
+      method: "get",
+      url: "http://localhost:8800/api/GetProductNames/getOrder",
+    }).then((response) => {
+      console.log(response.data);
+      setOrderNameData(response.data);
+    });
+  }, []);
+  const [selectedDate, setSelectedDate] = React.useState(new Date(2022, 1, 1));
+
+  const [availabilityDate, setAvailabilityDate] = React.useState();
+  const [deliveryDate, setDeliveryDate] = React.useState();
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
@@ -80,6 +120,8 @@ export default function OrderForm(props) {
       temp.TotalSize = fieldValues.TotalSize ? "" : "This field is required.";
     if ("OrderName" in fieldValues)
       temp.OrderName = fieldValues.OrderName ? "" : "This field is required.";
+    if ("Customer" in fieldValues)
+      temp.Customer = fieldValues.Customer ? "" : "This field is required.";
     if ("state" in fieldValues)
       temp.state = fieldValues.state ? "" : "This field is required.";
     if ("cost" in fieldValues)
@@ -92,18 +134,65 @@ export default function OrderForm(props) {
     setErrors({
       ...temp,
     });
-
-    if (fieldValues == values) return Object.values(temp).every((x) => x == "");
+    if (
+      fieldValues.ProductName &&
+      fieldValues.QNT &&
+      fieldValues.total &&
+      fieldValues.TotalSize &&
+      fieldValues.OrderName &&
+      fieldValues.state &&
+      fieldValues.cost &&
+      fieldValues.partno &&
+      fieldValues.Totalboxes &&
+      fieldValues.bkno &&
+      fieldValues.Customer &&
+      selectedDate &&
+      availabilityDate &&
+      deliveryDate
+    ) {
+      return true;
+      // if (fieldValues == values)
+      //   return Object.values(temp).every((x) => x == "");
+    }
+    return false;
   };
 
   const { values, setValues, errors, setErrors, handleInputChange, resetForm } =
     useForm(initialFValues, true, validate);
 
+  if (costValueForProduct) {
+    values.cost = costValueForProduct;
+  }
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("form is validated");
     if (validate()) {
-      addOrEdit(values, resetForm);
+      console.log("sending the data");
+      if (!values.bkno) values.bkno = "";
+      if (!values.Notes) values.Notes = "";
+      axios({
+        method: "post",
+        url: "http://localhost:8800/api/OrderManipulate/post",
+        data: {
+          productName: values.ProductName,
+          QNT: values.QNT,
+          cost: values.cost,
+          total: values.total,
+          customer: values.Customer,
+          Date: selectedDate,
+          orderName: values.OrderName,
+          state: values.state,
+          availabilityDate: availabilityDate,
+          deliveryDate: deliveryDate,
+          partNo: values.partno,
+          totalSize: values.TotalSize,
+          BK_NO: values.bkno,
+          totalBoxes: values.Totalboxes,
+          notes: values.Notes,
+        },
+      }).then((response) => {
+        console.log(response);
+        window.location.reload();
+      });
     }
   };
 
@@ -119,15 +208,21 @@ export default function OrderForm(props) {
               native
               name="ProductName"
               value={values.ProductName}
-              onChange={handleInputChange}
+              onChange={(e) => {
+                handleInputChange(e);
+                settingCostToProduct(e);
+              }}
               label="Product Name"
               error={errors.ProductName}
             >
               <option aria-label="None" value="" />
-              <option value={10}>Zellbury</option>
-              <option value={20}>Khaadi</option>
-              <option value={30}>Generation</option>
-              <option value={40}>Limelight</option>
+              {productNameData.map((val, index) => {
+                return (
+                  <option value={val.productName} key={val._id}>
+                    {val.productName}
+                  </option>
+                );
+              })}
             </Select>
           </FormControl>
 
@@ -161,10 +256,13 @@ export default function OrderForm(props) {
               error={errors.ProductName}
             >
               <option aria-label="None" value="" />
-              <option value={10}>customer1</option>
-              <option value={20}>customer2</option>
-              <option value={30}>customer3</option>
-              <option value={40}>customer3</option>
+              {customerNameData.map((val, index) => {
+                return (
+                  <option value={val.customer} key={val._id}>
+                    {val.customer}
+                  </option>
+                );
+              })}
             </Select>
           </FormControl>
 
@@ -181,10 +279,13 @@ export default function OrderForm(props) {
               error={errors.OrderName}
             >
               <option aria-label="None" value="" />
-              <option value={10}>order name1</option>
-              <option value={20}>order name2</option>
-              <option value={30}>order name3</option>
-              <option value={40}>order name4</option>
+              {orderNameData.map((val, index) => {
+                return (
+                  <option value={val.order} key={val._id}>
+                    {val.order}
+                  </option>
+                );
+              })}
             </Select>
           </FormControl>
 
@@ -243,8 +344,10 @@ export default function OrderForm(props) {
                 id="date-picker-dialog"
                 label="availability Date"
                 format="MM/dd/yyyy"
-                value={selectedDate}
-                onChange={handleDateChange}
+                value={availabilityDate}
+                onChange={(date) => {
+                  setAvailabilityDate(date);
+                }}
                 KeyboardButtonProps={{
                   "aria-label": "change date",
                 }}
@@ -270,8 +373,10 @@ export default function OrderForm(props) {
                 id="date-picker-dialog"
                 label="delivery Date"
                 format="MM/dd/yyyy"
-                value={selectedDate}
-                onChange={handleDateChange}
+                value={deliveryDate}
+                onChange={(date) => {
+                  setDeliveryDate(date);
+                }}
                 KeyboardButtonProps={{
                   "aria-label": "change date",
                 }}
@@ -362,13 +467,7 @@ export default function OrderForm(props) {
               marginTop: "15px",
             }}
           >
-            <Controls.Button
-              // type="submit"
-              text="Save"
-              onClick={() => {
-                console.log("form is submitted through button");
-              }}
-            />
+            <Controls.Button type="submit" text="Save" />
             <Controls.Button text="Reset" color="default" onClick={resetForm} />
           </div>
         </Grid>

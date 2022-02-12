@@ -10,28 +10,30 @@ import TablePaginationUnstyled from "@mui/base/TablePaginationUnstyled";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { useEffect } from "react";
+import axios from "axios";
 import ReactHTMLTableToExcel from "react-html-table-to-excel";
 
 function createData(ProductName, QNT, cost, total, state, totalsize) {
   return { ProductName, QNT, cost, total, state, totalsize };
 }
 
-const rows = [
-  createData("Cupcake", 305, 3.7, "$2456", "recived", 0.345),
-  createData("Donut", 452, 25.0, "$2456", "cancelld", 0.645),
-  createData("Eclair", 262, 16.0, "$2456", "recived", 0.945),
-  createData("Frozen yoghurt", 159, 6.0, "$2456", "recived ", 0.245),
-  createData("Gingerbread", 356, 16.0, "$2456", "cancelled", 0.645),
-  createData("Honeycomb", 408, 3.2, "$2456", "cancelld", 0.545),
-  createData("Ice cream sandwich", 237, 9.0, "$2456", "recived", 0.845),
-  createData("Jelly Bean", 375, 0.0, "$2456", "cancelld", 0.45),
-  createData("KitKat", 518, 26.0, "$2456", "recived ", 0.59),
-  createData("Lollipop", 392, 0.2, "$2456", "recived ", 0.145),
-  createData("Marshmallow", 318, 0, "$2456", "cancelled", 0.345),
-  createData("Nougat", 360, 19.0, "$2456", "cancelled", 0.645),
-  createData("Oreo", 437, 18.0, "$2456", "cancelled", 0.745),
-].sort((a, b) => (a.QNT < b.QNT ? -1 : 1));
+// const rows = [
+//   createData("Cupcake", 305, 3.7, "$2456", "recived", 0.345),
+//   createData("Donut", 452, 25.0, "$2456", "cancelld", 0.645),
+//   createData("Eclair", 262, 16.0, "$2456", "recived", 0.945),
+//   createData("Frozen yoghurt", 159, 6.0, "$2456", "recived ", 0.245),
+//   createData("Gingerbread", 356, 16.0, "$2456", "cancelled", 0.645),
+//   createData("Honeycomb", 408, 3.2, "$2456", "cancelld", 0.545),
+//   createData("Ice cream sandwich", 237, 9.0, "$2456", "recived", 0.845),
+//   createData("Jelly Bean", 375, 0.0, "$2456", "cancelld", 0.45),
+//   createData("KitKat", 518, 26.0, "$2456", "recived ", 0.59),
+//   createData("Lollipop", 392, 0.2, "$2456", "recived ", 0.145),
+//   createData("Marshmallow", 318, 0, "$2456", "cancelled", 0.345),
+//   createData("Nougat", 360, 19.0, "$2456", "cancelled", 0.645),
+//   createData("Oreo", 437, 18.0, "$2456", "cancelled", 0.745),
+// ].sort((a, b) => (a.QNT < b.QNT ? -1 : 1));
 
+let rows = [];
 const Root = styled("div")`
   table {
     font-family: arial, sans-serif;
@@ -89,6 +91,18 @@ const CustomTablePagination = styled(TablePaginationUnstyled)`
 function Report() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const [rowsData, setRowsData] = React.useState([]);
+
+  useEffect(() => {
+    axios({
+      method: "get",
+      url: "http://localhost:8800/api/ReportManipulate/get",
+    }).then((response) => {
+      console.log(response.data);
+      rows = response.data;
+    });
+  }, []);
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
