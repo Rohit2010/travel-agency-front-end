@@ -8,6 +8,8 @@ import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import NativeSelect from "@material-ui/core/NativeSelect";
 import { makeStyles } from "@material-ui/core/styles";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "date-fns";
 // import Grid from "@material-ui/core/Grid";
 import DateFnsUtils from "@date-io/date-fns";
@@ -191,6 +193,15 @@ export default function OrderForm(props) {
         },
       }).then((response) => {
         console.log(response);
+        toast.success("Item inserted", {
+          position: "bottom-center",
+          autoClose: 1000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
         window.location.reload();
       });
     }
@@ -472,6 +483,17 @@ export default function OrderForm(props) {
           </div>
         </Grid>
       </Grid>
+      <ToastContainer
+        position="bottom-center"
+        autoClose={1000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </Form>
   );
 }

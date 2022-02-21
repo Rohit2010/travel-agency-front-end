@@ -8,6 +8,8 @@ import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import NativeSelect from "@material-ui/core/NativeSelect";
 import { makeStyles } from "@material-ui/core/styles";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -74,6 +76,15 @@ export default function Brand(props) {
         },
       }).then((response) => {
         console.log(response);
+        toast.success("Item inserted", {
+          position: "bottom-center",
+          autoClose: 1000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
         window.location.reload();
       });
     }
@@ -103,6 +114,17 @@ export default function Brand(props) {
           </div>
         </Grid>
       </Grid>
+      <ToastContainer
+        position="bottom-center"
+        autoClose={1000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </Form>
   );
 }

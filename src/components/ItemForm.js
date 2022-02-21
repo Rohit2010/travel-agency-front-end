@@ -9,6 +9,8 @@ import Select from "@material-ui/core/Select";
 import NativeSelect from "@material-ui/core/NativeSelect";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
@@ -143,6 +145,15 @@ export default function ItemForm(props) {
         },
       }).then((response) => {
         console.log(response);
+        toast.success("Item inserted", {
+          position: "bottom-center",
+          autoClose: 1000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
         window.location.reload();
       });
     }
@@ -272,6 +283,17 @@ export default function ItemForm(props) {
           </div>
         </Grid>
       </Grid>
+      <ToastContainer
+        position="bottom-center"
+        autoClose={1000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </Form>
   );
 }

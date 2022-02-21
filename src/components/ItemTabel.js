@@ -469,6 +469,7 @@ function ItemTabel() {
         element.boxSize = element.boxSize;
       }
       setData(datatoprint);
+      console.log(datatoprint.length, "toast here");
     });
   }, []);
   return (
