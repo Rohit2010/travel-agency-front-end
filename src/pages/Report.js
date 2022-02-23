@@ -33,7 +33,7 @@ function createData(ProductName, QNT, cost, total, state, totalsize) {
 //   createData("Oreo", 437, 18.0, "$2456", "cancelled", 0.745),
 // ].sort((a, b) => (a.QNT < b.QNT ? -1 : 1));
 
-let rows = [];
+let staticRows = [];
 const Root = styled("div")`
   table {
     font-family: arial, sans-serif;
@@ -91,6 +91,8 @@ const CustomTablePagination = styled(TablePaginationUnstyled)`
 function Report() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [allCustomers, setAllCustomers] = React.useState([]);
+  const [allData, setAllData] = React.useState([]);
 
   const [rowsData, setRowsData] = React.useState([]);
 
@@ -99,14 +101,22 @@ function Report() {
       method: "get",
       url: "http://localhost:8800/api/ReportManipulate/get",
     }).then((response) => {
-      console.log(response.data);
-      rows = response.data;
+      staticRows = response.data;
+      setRowsData(staticRows);
+      setAllData(staticRows);
+    });
+    axios({
+      method: "get",
+      url: "http://localhost:8800/api/GetProductNames/getCustomer",
+    }).then((response) => {
+      const result = response.data;
+      setAllCustomers(result);
     });
   }, []);
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rowsData.length) : 0;
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -124,6 +134,9 @@ function Report() {
   const [open2, setOpen2] = React.useState(false);
   const [reportByBrand, setReportByBrand] = React.useState("");
   const [open3, setOpen3] = React.useState(false);
+
+  const [reportByCustomer, setReportByCustomer] = React.useState("");
+  const [open4, setOpen4] = React.useState(false);
 
   const handleChange1 = (event) => {
     setReportByOrderNo(event.target.value);
@@ -159,6 +172,13 @@ function Report() {
   const handleOpen3 = () => {
     setOpen3(true);
   };
+  const handleClose4 = () => {
+    setOpen4(false);
+  };
+
+  const handleOpen4 = () => {
+    setOpen4(true);
+  };
 
   const downloadPdf = () => {
     const doc = new jsPDF();
@@ -173,7 +193,7 @@ function Report() {
         { header: "state", dataKey: "state" },
         { header: "totalsize", dataKey: "totalsize" },
       ],
-      body: rows,
+      body: rowsData,
     });
     doc.save("table.pdf");
   };
@@ -271,6 +291,51 @@ function Report() {
             <MenuItem value={30}>All state</MenuItem>
           </Select>
         </FormControl>
+
+        <FormControl sx={{ m: 1, minWidth: 190 }}>
+          <InputLabel id="demo-controlled-open-select-label">
+            Report by Customer
+          </InputLabel>
+          <Select
+            style={{
+              borderRadius: "25px",
+              height: "54px",
+              color: "#505152",
+            }}
+            labelId="demo-controlled-open-select-label"
+            id="demo-controlled-open-select"
+            open={open4}
+            onClose={handleClose4}
+            onOpen={handleOpen4}
+            value={reportByCustomer}
+            label="Report by Customer"
+            onChange={(event) => {
+              setReportByCustomer(event.target.value);
+              setOpenTable(true);
+              console.log(event.target.value);
+              let dummy = [];
+
+              for (let i = 0; i < allData.length; i++) {
+                if (allData[i].customer === event.target.value) {
+                  dummy.push(allData[i]);
+                }
+              }
+              setRowsData(dummy);
+            }}
+          >
+            <MenuItem value="">
+              <em>None</em>
+            </MenuItem>
+
+            {allCustomers.map((val, index) => {
+              return (
+                <MenuItem key={index} value={val.customer}>
+                  {val.customer}
+                </MenuItem>
+              );
+            })}
+          </Select>
+        </FormControl>
       </Typography>
       <Typography
         style={{
@@ -305,11 +370,11 @@ function Report() {
                   </thead>
                   <tbody>
                     {(rowsPerPage > 0
-                      ? rows.slice(
+                      ? rowsData.slice(
                           page * rowsPerPage,
                           page * rowsPerPage + rowsPerPage
                         )
-                      : rows
+                      : rowsData
                     ).map((row) => (
                       <tr key={row.ProductName}>
                         <td style={{ width: 350 }}>{row.ProductName}</td>
@@ -347,7 +412,7 @@ function Report() {
                           { label: "All", value: -1 },
                         ]}
                         colSpan={6}
-                        count={rows.length}
+                        count={rowsData.length}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         componentsProps={{
