@@ -8,10 +8,46 @@ import Popup from "../components/Popup";
 import ItemForm from "../components/ItemForm";
 import ItemTabel from "../components/ItemTabel";
 import Brand from "../components/formcontrols/Brand";
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import UpdateForm from "../components/UpdateForm";
 
 function ItemsPage() {
   const [openPopup, setOpenPopup] = useState(false);
-  const [brandPopup, setBrandPopup] = useState(false);
+  const [updatePopup, setUpdatePopup] = useState(false);
+  const [selectedRows, setSelectedRows] = React.useState([]);
+  const [updateRowData, setUpdateRowData] = React.useState([]);
+
+  const handleDeletedRows = () => {
+    if (selectedRows) {
+      axios({
+        method: "post",
+        url: "http://localhost:8800/api/GetProductNames/deleterows",
+        data: {
+          rows: selectedRows,
+        },
+      }).then((response) => {
+        if (response.data.status === "ok") {
+          setSelectedRows([]);
+          toast.success("Item Deleted", {
+            position: "bottom-center",
+            autoClose: 1000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          window.location.reload();
+        }
+      });
+    }
+  };
+  const handleUpdateRow = () => {
+    if (selectedRows.length == 1) {
+      setUpdatePopup(true);
+    }
+  };
   return (
     <>
       <Typography
@@ -41,18 +77,29 @@ function ItemsPage() {
           style={{ marginRight: "10px", marginLeft: "10px" }}
         >
           <Button
-            text="Add New Brand"
+            text="Delete Rows"
             variant="outlined"
             color="primary"
-            startIcon={<AddIcon />}
+            // startIcon={<AddIcon />}
             onClick={() => {
-              setBrandPopup(true);
+              handleDeletedRows();
             }}
             style={{ width: "150px" }}
           >
-            Add Brand
+            Delete Rows
           </Button>
-
+          <Button
+            text="Update Row"
+            variant="outlined"
+            color="primary"
+            // startIcon={<AddIcon />}
+            onClick={() => {
+              handleUpdateRow();
+            }}
+            style={{ width: "150px" }}
+          >
+            Update Row
+          </Button>
           <Button
             text="Add New"
             variant="outlined"
@@ -68,7 +115,11 @@ function ItemsPage() {
         </Typography>
       </Typography>
       <Typography style={{ margin: "20px" }}>
-        <ItemTabel />
+        <ItemTabel
+          setSelectedRows={setSelectedRows}
+          setUpdateRowData={setUpdateRowData}
+          selectedRows={selectedRows}
+        />
       </Typography>
       <Popup
         title="Enter your Item Specfication"
@@ -78,12 +129,24 @@ function ItemsPage() {
         <ItemForm />
       </Popup>
       <Popup
-        title="Enter Brand"
-        openPopup={brandPopup}
-        setOpenPopup={setBrandPopup}
+        title="Enter your Item Specfication"
+        openPopup={updatePopup}
+        setOpenPopup={setUpdatePopup}
       >
-        <Brand />
+        <UpdateForm updateRowData={updateRowData} />
       </Popup>
+
+      <ToastContainer
+        position="bottom-center"
+        autoClose={1000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </>
   );
 }

@@ -14,20 +14,20 @@ import axios from "axios";
 
 const initialFValues = {
   id: 0,
-  customer: "",
+  bkno: "",
 };
 
-export default function Customer(props) {
+export default function Bkno(props) {
   const validate = (fieldValues = values) => {
     let temp = { ...errors };
-    if ("customer" in fieldValues)
-      temp.customer = fieldValues.customer ? "" : "This field is required.";
+    if ("bkno" in fieldValues)
+      temp.bkno = fieldValues.bkno ? "" : "This field is required.";
 
     setErrors({
       ...temp,
     });
 
-    if (fieldValues.customer) {
+    if (fieldValues.bkno) {
       return true;
       // return Object.values(temp).every((x) => x == "");
     }
@@ -44,9 +44,9 @@ export default function Customer(props) {
 
       axios({
         method: "post",
-        url: "http://localhost:8800/api/GetProductNames/addCustomer",
+        url: "http://localhost:8800/api/GetProductNames/addBkno",
         data: {
-          customer: values.customer,
+          bkno: values.bkno,
         },
       }).then((response) => {
         console.log(response);
@@ -70,11 +70,11 @@ export default function Customer(props) {
         <Grid item xs={12}>
           <Controls.Input
             // required
-            label="Customer Name"
-            name="customer"
-            value={values.customer}
+            label="Bkno"
+            name="bkno"
+            value={values.bkno}
             onChange={handleInputChange}
-            error={errors.Brand}
+            error={errors.bkno}
           />
           <div
             style={{

@@ -120,6 +120,13 @@ export default function ItemForm(props) {
   const { values, setValues, errors, setErrors, handleInputChange, resetForm } =
     useForm(initialFValues, true, validate);
 
+  let tempvalue = 0;
+  if (values.Height && values.Long && values.Width && values.pcsinbox) {
+    tempvalue = values.Height * values.Long * values.Width;
+    tempvalue = tempvalue / values.pcsinbox;
+    values.boxsize = tempvalue / 1000000;
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validate()) {
@@ -193,7 +200,9 @@ export default function ItemForm(props) {
             label="Product Name"
             name="ProductName"
             value={values.ProductName}
-            onChange={handleInputChange}
+            onChange={(e) => {
+              handleInputChange(e);
+            }}
             error={errors.ProductName}
           />
           <Controls.Input
@@ -210,7 +219,9 @@ export default function ItemForm(props) {
             type="Number"
             name="pcsinbox"
             value={values.pcsinbox}
-            onChange={handleInputChange}
+            onChange={(e) => {
+              handleInputChange(e);
+            }}
             error={errors.pcsinbox}
           />
           <Controls.Input
@@ -243,7 +254,9 @@ export default function ItemForm(props) {
             label="Long"
             name="Long"
             value={values.Long}
-            onChange={handleInputChange}
+            onChange={(e) => {
+              handleInputChange(e);
+            }}
             error={errors.Long}
           />
           <Controls.Input
@@ -251,7 +264,9 @@ export default function ItemForm(props) {
             label="Width"
             name="Width"
             value={values.Width}
-            onChange={handleInputChange}
+            onChange={(e) => {
+              handleInputChange(e);
+            }}
             error={errors.Width}
           />
           <Controls.Input
@@ -259,7 +274,9 @@ export default function ItemForm(props) {
             label="Height"
             name="Height"
             value={values.Height}
-            onChange={handleInputChange}
+            onChange={(e) => {
+              handleInputChange(e);
+            }}
             error={errors.Height}
           />
           <Controls.Input

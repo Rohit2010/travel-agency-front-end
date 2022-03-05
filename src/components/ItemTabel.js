@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { DataGrid } from "@material-ui/data-grid";
 import axios from "axios";
@@ -446,7 +446,8 @@ const rows = [
   },
 ];
 
-function ItemTabel() {
+function ItemTabel({ setSelectedRows, setUpdateRowData, selectedRows }) {
+  const gridRef = useRef();
   const [data, setData] = React.useState([]);
   useEffect(() => {
     axios({
@@ -468,10 +469,34 @@ function ItemTabel() {
         element.Height = element.height;
         element.boxSize = element.boxSize;
       }
+
+      datatoprint.sort(function (a, b) {
+        var keyA = new Date(a.updatedAt),
+          keyB = new Date(b.updatedAt);
+        // Compare the 2 dates
+        if (keyA < keyB) return 1;
+        if (keyA > keyB) return -1;
+        return 0;
+      });
+
       setData(datatoprint);
-      console.log(datatoprint.length, "toast here");
     });
   }, []);
+
+  const onSelectionChanged = (rows) => {
+    setSelectedRows(rows);
+    if (rows.length === 1) {
+      if (data) {
+        for (let index = 0; index < data.length; index++) {
+          if (data[index].id === rows[0]) {
+            setUpdateRowData(data[index]);
+            break;
+          }
+        }
+      }
+    }
+  };
+
   return (
     <div
       style={{
@@ -482,11 +507,13 @@ function ItemTabel() {
       }}
     >
       <DataGrid
+        ref={gridRef}
         rows={data}
         columns={columns}
         pageSize={6}
         checkboxSelection
         disableSelectionOnClick
+        onSelectionModelChange={onSelectionChanged}
       />
     </div>
   );

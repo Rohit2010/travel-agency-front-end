@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
 const initialFValues = {
   id: 0,
   ProductName: "",
+  Customer: "",
   QNT: "",
   total: "",
   OrderName: "",
@@ -40,6 +41,7 @@ const initialFValues = {
   cost: "",
   partno: "",
   TotalSize: "",
+  Totalboxes: "",
   bkno: "",
   Notes: "",
 };
@@ -48,16 +50,24 @@ export default function OrderForm(props) {
   const [productNameData, setProductNameData] = React.useState([]);
   const [orderNameData, setOrderNameData] = React.useState([]);
   const [customerNameData, setCustomerNameData] = React.useState([]);
+  const [bknoData, setBknoData] = React.useState([]);
+  const [stateData, setStateData] = React.useState([]);
+
   const [costValueForProduct, setCostValueForProduct] = React.useState();
+  const [pcsinboxForProduct, setPcsinboxForProduct] = React.useState();
+  const [boxSizeForProduct, setBoxSizeForProduct] = React.useState();
   function settingCostToProduct(e) {
     axios({
       method: "post",
-      url: "http://localhost:8800/api/GetProductNames/getcostforproduct",
+      url: "http://localhost:8800/api/GetProductNames/getvaluesforproduct",
       data: {
         productName: e.target.value,
       },
     }).then((response) => {
-      setCostValueForProduct(response.data);
+      console.log(response.data);
+      setCostValueForProduct(response.data.cost);
+      setPcsinboxForProduct(response.data.pcsInbox);
+      setBoxSizeForProduct(response.data.boxSize);
     });
   }
   useEffect(() => {
@@ -82,11 +92,27 @@ export default function OrderForm(props) {
       console.log(response.data);
       setOrderNameData(response.data);
     });
+    axios({
+      method: "get",
+      url: "http://localhost:8800/api/GetProductNames/getBkno",
+    }).then((response) => {
+      console.log(response.data);
+      setBknoData(response.data);
+    });
+    axios({
+      method: "get",
+      url: "http://localhost:8800/api/GetProductNames/getState",
+    }).then((response) => {
+      console.log(response.data);
+      setStateData(response.data);
+    });
   }, []);
   const [selectedDate, setSelectedDate] = React.useState(new Date(2022, 1, 1));
 
-  const [availabilityDate, setAvailabilityDate] = React.useState();
-  const [deliveryDate, setDeliveryDate] = React.useState();
+  const [availabilityDate, setAvailabilityDate] = React.useState(
+    new Date(2022, 1, 1)
+  );
+  const [deliveryDate, setDeliveryDate] = React.useState(new Date(2022, 1, 1));
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
@@ -164,6 +190,16 @@ export default function OrderForm(props) {
 
   if (costValueForProduct) {
     values.cost = costValueForProduct;
+  }
+  if (pcsinboxForProduct) {
+    if (values.QNT) {
+      values.Totalboxes = values.QNT / pcsinboxForProduct;
+    }
+  }
+  if (boxSizeForProduct) {
+    if (values.QNT) {
+      values.TotalSize = values.QNT * boxSizeForProduct;
+    }
   }
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -336,13 +372,13 @@ export default function OrderForm(props) {
               error={errors.state}
             >
               <option aria-label="None" value="" />
-              <option value={10}>Pending</option>
-              <option value={20}>Available</option>
-              <option value={30}>Shipping</option>
-              <option value={40}>Received</option>
-              <option value={50}>Canceled </option>
-              <option value={60}>Delayed </option>
-              <option value={70}>Archived </option>
+              {stateData.map((val, index) => {
+                return (
+                  <option value={val.state} key={val._id}>
+                    {val.state}
+                  </option>
+                );
+              })}
             </Select>
           </FormControl>
 
@@ -456,12 +492,13 @@ export default function OrderForm(props) {
               label="bkno"
             >
               <option aria-label="None" value="" />
-              <option value={1}>BK NO1</option>
-              <option value={2}>BK NO2</option>
-              <option value={3}>BK NO3</option>
-              <option value={4}>BK NO3</option>
-              <option value={5}>BK NO4 </option>
-              <option value={6}>BK NO5 </option>
+              {bknoData.map((val, index) => {
+                return (
+                  <option value={val.bkno} key={val._id}>
+                    {val.bkno}
+                  </option>
+                );
+              })}
             </Select>
           </FormControl>
           <Controls.Input
@@ -479,7 +516,14 @@ export default function OrderForm(props) {
             }}
           >
             <Controls.Button type="submit" text="Save" />
-            <Controls.Button text="Reset" color="default" onClick={resetForm} />
+            <Controls.Button
+              text="Reset"
+              color="default"
+              onClick={() => {
+                setCostValueForProduct();
+                resetForm();
+              }}
+            />
           </div>
         </Grid>
       </Grid>

@@ -5,6 +5,7 @@ import Home from "./pages/home";
 import Report from "./pages/Report";
 import ItemsPage from "./pages/ItemsPage";
 import OrderPage from "./pages/OrderPage";
+import Options from "./pages/Options";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/Report" component={Report} />
         <Route path="/ItemsPage" component={ItemsPage} />
         <Route path="/OrderPage" component={OrderPage} />
+        <Route path="/Options" component={Options} />
       </Switch>
     </Router>
   );

@@ -62,6 +62,9 @@ function Navbar() {
             <Link to="/Report" className={classes.link}>
               Report
             </Link>
+            <Link to="/Options" className={classes.link}>
+              Options
+            </Link>
           </div>
         )}
       </Toolbar>

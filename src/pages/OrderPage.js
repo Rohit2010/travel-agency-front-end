@@ -13,11 +13,13 @@ import Controls from "../components/controls/Controls";
 import readXlsxFile from "read-excel-file";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
+import Bkno from "../components/formcontrols/Bkno";
+import State from "../components/formcontrols/State";
 
 function OrderPage() {
   const [openPopup, setOpenPopup] = useState(false);
   const [orderPopup, setOrderPopup] = useState(false);
-  const [customerPoppup, setCustomerPoppup] = useState(false);
+
   const [orderDataFromFile, setOrderDataFromFile] = useState([]);
 
   const onFileHandling = (e) => {
@@ -92,30 +94,6 @@ function OrderPage() {
           >
             Add order
           </Button>
-          <Button
-            text="Add Customer"
-            variant="outlined"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={() => {
-              setCustomerPoppup(true);
-            }}
-            style={{ width: "250px" }}
-          >
-            Add Customer
-          </Button>
-          <Button
-            text="Add Order"
-            variant="outlined"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={() => {
-              setOrderPopup(true);
-            }}
-            style={{ width: "250px" }}
-          >
-            Add Order Name
-          </Button>
 
           <Controls.Input
             type="file"
@@ -146,20 +124,7 @@ function OrderPage() {
       >
         <OrderForm />
       </Popup>
-      <Popup
-        title="Enter your Customer Name"
-        openPopup={customerPoppup}
-        setOpenPopup={setCustomerPoppup}
-      >
-        <Customer />
-      </Popup>
-      <Popup
-        title="Enter Order Name"
-        openPopup={orderPopup}
-        setOpenPopup={setOrderPopup}
-      >
-        <Order />
-      </Popup>
+
       <ToastContainer
         position="bottom-center"
         autoClose={1000}
