@@ -18,113 +18,130 @@ function Options() {
   const [orderPopup, setOrderPopup] = useState(false);
 
   return (
-    <Typography style={{ marginTop: "85px" }}>
-      <Button
-        text="Add Brand"
-        variant="outlined"
-        color="primary"
-        startIcon={<AddIcon />}
-        onClick={() => {
-          setBrandPopup(true);
+    <Typography
+      style={{
+        height: "90vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Typography
+        style={{
+          height: "80%",
+          marginTop: "85px",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-around",
         }}
-        style={{ width: "150px" }}
       >
-        Add Brand
-      </Button>
-      <Button
-        text="Add Customer"
-        variant="outlined"
-        color="primary"
-        startIcon={<AddIcon />}
-        onClick={() => {
-          setCustomerPoppup(true);
-        }}
-        style={{ width: "250px" }}
-      >
-        Add Customer
-      </Button>
-      <Button
-        text="Add Order"
-        variant="outlined"
-        color="primary"
-        startIcon={<AddIcon />}
-        onClick={() => {
-          setOrderPopup(true);
-        }}
-        style={{ width: "250px" }}
-      >
-        Add Order Name
-      </Button>
-      <Button
-        text="Add Bkno"
-        variant="outlined"
-        color="primary"
-        startIcon={<AddIcon />}
-        onClick={() => {
-          setBknoPopup(true);
-        }}
-        style={{ width: "250px" }}
-      >
-        Add Bkno
-      </Button>
-      <Button
-        text="Add State"
-        variant="outlined"
-        color="primary"
-        startIcon={<AddIcon />}
-        onClick={() => {
-          setStatePopup(true);
-        }}
-        style={{ width: "250px" }}
-      >
-        Add State
-      </Button>
-      <Popup
-        title="Enter Order Name"
-        openPopup={orderPopup}
-        setOpenPopup={setOrderPopup}
-      >
-        <Order />
-      </Popup>
-      <Popup
-        title="Enter your Customer Name"
-        openPopup={customerPoppup}
-        setOpenPopup={setCustomerPoppup}
-      >
-        <Customer />
-      </Popup>
-      <Popup
-        title="Enter Bkno"
-        openPopup={bknoPopup}
-        setOpenPopup={setBknoPopup}
-      >
-        <Bkno />
-      </Popup>
-      <Popup
-        title="Enter State"
-        openPopup={statePopup}
-        setOpenPopup={setStatePopup}
-      >
-        <State />
-      </Popup>
-      <Popup
-        title="Enter Brand"
-        openPopup={brandPopup}
-        setOpenPopup={setBrandPopup}
-      >
-        <Brand />
-      </Popup>
-      <ToastContainer
-        position="bottom-center"
-        autoClose={1000}
-        hideProgressBar
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
+        <Button
+          text="Add Brand"
+          variant="outlined"
+          color="primary"
+          startIcon={<AddIcon />}
+          onClick={() => {
+            setBrandPopup(true);
+          }}
+          style={{ width: "250px" }}
+        >
+          Add Brand
+        </Button>
+        <Button
+          text="Add Customer"
+          variant="outlined"
+          color="primary"
+          startIcon={<AddIcon />}
+          onClick={() => {
+            setCustomerPoppup(true);
+          }}
+          style={{ width: "250px" }}
+        >
+          Add Customer
+        </Button>
+        <Button
+          text="Add Order"
+          variant="outlined"
+          color="primary"
+          startIcon={<AddIcon />}
+          onClick={() => {
+            setOrderPopup(true);
+          }}
+          style={{ width: "250px" }}
+        >
+          Add Order Name
+        </Button>
+        <Button
+          text="Add Bkno"
+          variant="outlined"
+          color="primary"
+          startIcon={<AddIcon />}
+          onClick={() => {
+            setBknoPopup(true);
+          }}
+          style={{ width: "250px" }}
+        >
+          Add Bkno
+        </Button>
+        <Button
+          text="Add State"
+          variant="outlined"
+          color="primary"
+          startIcon={<AddIcon />}
+          onClick={() => {
+            setStatePopup(true);
+          }}
+          style={{ width: "250px" }}
+        >
+          Add State
+        </Button>
+        <Popup
+          title="Enter Order Name"
+          openPopup={orderPopup}
+          setOpenPopup={setOrderPopup}
+        >
+          <Order />
+        </Popup>
+        <Popup
+          title="Enter your Customer Name"
+          openPopup={customerPoppup}
+          setOpenPopup={setCustomerPoppup}
+        >
+          <Customer />
+        </Popup>
+        <Popup
+          title="Enter Bkno"
+          openPopup={bknoPopup}
+          setOpenPopup={setBknoPopup}
+        >
+          <Bkno />
+        </Popup>
+        <Popup
+          title="Enter State"
+          openPopup={statePopup}
+          setOpenPopup={setStatePopup}
+        >
+          <State />
+        </Popup>
+        <Popup
+          title="Enter Brand"
+          openPopup={brandPopup}
+          setOpenPopup={setBrandPopup}
+        >
+          <Brand />
+        </Popup>
+        <ToastContainer
+          position="bottom-center"
+          autoClose={1000}
+          hideProgressBar
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
+      </Typography>
     </Typography>
   );
 }

@@ -11,6 +11,7 @@ import Brand from "../components/formcontrols/Brand";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import UpdateForm from "../components/UpdateForm";
+import { REQUESTURL } from "../Constants";
 
 function ItemsPage() {
   const [openPopup, setOpenPopup] = useState(false);
@@ -22,7 +23,7 @@ function ItemsPage() {
     if (selectedRows) {
       axios({
         method: "post",
-        url: "http://localhost:8800/api/GetProductNames/deleterows",
+        url: `${REQUESTURL}/api/GetProductNames/deleterows`,
         data: {
           rows: selectedRows,
         },

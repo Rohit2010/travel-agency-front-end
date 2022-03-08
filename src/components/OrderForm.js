@@ -2,13 +2,17 @@ import React, { useState, useEffect } from "react";
 import { Grid } from "@material-ui/core";
 import Controls from "./controls/Controls";
 import { useForm, Form } from "./useForm";
-import InputLabel from "@material-ui/core/InputLabel";
 import FormHelperText from "@material-ui/core/FormHelperText";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
 import NativeSelect from "@material-ui/core/NativeSelect";
+
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+
 import { makeStyles } from "@material-ui/core/styles";
 import { ToastContainer, toast } from "react-toastify";
+import Autocomplete from "@mui/material/Autocomplete";
+
 import "react-toastify/dist/ReactToastify.css";
 import "date-fns";
 // import Grid from "@material-ui/core/Grid";
@@ -19,6 +23,7 @@ import {
   KeyboardDatePicker,
 } from "@material-ui/pickers";
 import axios from "axios";
+import { REQUESTURL } from "../Constants";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -56,16 +61,39 @@ export default function OrderForm(props) {
   const [costValueForProduct, setCostValueForProduct] = React.useState();
   const [pcsinboxForProduct, setPcsinboxForProduct] = React.useState();
   const [boxSizeForProduct, setBoxSizeForProduct] = React.useState();
-  function settingCostToProduct(e) {
+
+  const [onlyProducts, setOnlyProducts] = React.useState([]);
+  const [productNameAutoComplete, setProductNameAutoComplete] =
+    React.useState("");
+  const [productNameCheck, setProductNameCheck] = React.useState(true);
+
+  const [onlyCustomers, setOnlyCustomers] = React.useState([]);
+  const [customerNameAutoComplete, setCustomerNameAutoComplete] =
+    React.useState("");
+  const [customerNameCheck, setCustomerNameCheck] = React.useState(true);
+
+  const [onlyOrders, setOnlyOrders] = React.useState([]);
+  const [orderNameAutoComplete, setOrderNameAutoComplete] = React.useState("");
+  const [orderNameCheck, setOrderNameCheck] = React.useState(true);
+
+  const [onlyStates, setOnlyStates] = React.useState([]);
+  const [stateNameAutoComplete, setStateNameAutoComplete] = React.useState("");
+  const [stateNameCheck, setStateNameCheck] = React.useState(true);
+
+  const [onlybkno, setOnlybkno] = React.useState([]);
+  const [bknoAutoComplete, setBknoAutoComplete] = React.useState("");
+  const [bknoCheck, setBknoCheck] = React.useState(true);
+
+  function settingCostToProduct(value) {
     axios({
       method: "post",
-      url: "http://localhost:8800/api/GetProductNames/getvaluesforproduct",
+      url: `${REQUESTURL}/api/GetProductNames/getvaluesforproduct`,
       data: {
-        productName: e.target.value,
+        productName: value,
       },
     }).then((response) => {
-      console.log(response.data);
-      setCostValueForProduct(response.data.cost);
+      // console.log(response.data);
+      if (response.data.cost) setCostValueForProduct(response.data.cost);
       setPcsinboxForProduct(response.data.pcsInbox);
       setBoxSizeForProduct(response.data.boxSize);
     });
@@ -73,46 +101,118 @@ export default function OrderForm(props) {
   useEffect(() => {
     axios({
       method: "get",
-      url: "http://localhost:8800/api/GetProductNames/get",
+      url: `${REQUESTURL}/api/GetProductNames/get`,
     }).then((response) => {
-      console.log(response.data);
       setProductNameData(response.data);
+      let temp = [];
+      for (let index = 0; index < response.data.length; index++) {
+        temp.push(response.data[index].productName);
+      }
+      setOnlyProducts(temp);
     });
     axios({
       method: "get",
-      url: "http://localhost:8800/api/GetProductNames/getCustomer",
+      url: `${REQUESTURL}/api/GetProductNames/getCustomer`,
     }).then((response) => {
-      console.log(response.data);
       setCustomerNameData(response.data);
-    });
-    axios({
-      method: "get",
-      url: "http://localhost:8800/api/GetProductNames/getOrder",
-    }).then((response) => {
-      console.log(response.data);
-      setOrderNameData(response.data);
-    });
-    axios({
-      method: "get",
-      url: "http://localhost:8800/api/GetProductNames/getBkno",
-    }).then((response) => {
-      console.log(response.data);
-      setBknoData(response.data);
-    });
-    axios({
-      method: "get",
-      url: "http://localhost:8800/api/GetProductNames/getState",
-    }).then((response) => {
-      console.log(response.data);
-      setStateData(response.data);
-    });
-  }, []);
-  const [selectedDate, setSelectedDate] = React.useState(new Date(2022, 1, 1));
 
-  const [availabilityDate, setAvailabilityDate] = React.useState(
-    new Date(2022, 1, 1)
-  );
-  const [deliveryDate, setDeliveryDate] = React.useState(new Date(2022, 1, 1));
+      let temp = [];
+      for (let index = 0; index < response.data.length; index++) {
+        temp.push(response.data[index].customer);
+      }
+      setOnlyCustomers(temp);
+    });
+    axios({
+      method: "get",
+      url: `${REQUESTURL}/api/GetProductNames/getOrder`,
+    }).then((response) => {
+      setOrderNameData(response.data);
+
+      let temp = [];
+      for (let index = 0; index < response.data.length; index++) {
+        temp.push(response.data[index].order);
+      }
+      setOnlyOrders(temp);
+    });
+    axios({
+      method: "get",
+      url: `${REQUESTURL}/api/GetProductNames/getBkno`,
+    }).then((response) => {
+      setBknoData(response.data);
+
+      let temp = [];
+      for (let index = 0; index < response.data.length; index++) {
+        temp.push(response.data[index].bkno);
+      }
+      setOnlybkno(temp);
+    });
+    axios({
+      method: "get",
+      url: `${REQUESTURL}/api/GetProductNames/getState`,
+    }).then((response) => {
+      setStateData(response.data);
+      console.log(response.data, "yess");
+
+      let temp = [];
+      for (let index = 0; index < response.data.length; index++) {
+        temp.push(response.data[index].state);
+      }
+      setOnlyStates(temp);
+    });
+    setBknoCheck(false);
+    setStateNameCheck(false);
+    setOrderNameCheck(false);
+    setCustomerNameCheck(false);
+    setProductNameCheck(false);
+  }, []);
+
+  const handleProductNameChange = (event, value) => {
+    if (value) {
+      setProductNameCheck(false);
+      settingCostToProduct(value);
+    } else {
+      setProductNameCheck(true);
+    }
+    setProductNameAutoComplete(value);
+  };
+  const handleCustomerNameChange = (event, value) => {
+    if (value) {
+      setCustomerNameCheck(false);
+    } else {
+      setCustomerNameCheck(true);
+    }
+    setCustomerNameAutoComplete(value);
+  };
+  const handleOrderNameChange = (event, value) => {
+    if (value) {
+      setOrderNameCheck(false);
+    } else {
+      setOrderNameCheck(true);
+    }
+    setOrderNameAutoComplete(value);
+  };
+  const handleStateNameChange = (event, value) => {
+    if (value) {
+      setStateNameCheck(false);
+    } else {
+      setStateNameCheck(true);
+    }
+    setStateNameAutoComplete(value);
+  };
+  const handleBknoChange = (event, value) => {
+    if (value) {
+      setBknoCheck(false);
+    } else {
+      setBknoCheck(true);
+    }
+    setBknoAutoComplete(value);
+  };
+
+  const [selectedDate, setSelectedDate] = React.useState(new Date());
+
+  const [availabilityDate, setAvailabilityDate] = React.useState(new Date());
+  const [deliveryDate, setDeliveryDate] = React.useState(new Date());
+  const [dateFlag, setDateFlag] = React.useState(false);
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
@@ -133,7 +233,6 @@ export default function OrderForm(props) {
   };
 
   const { addOrEdit, recordForEdit } = props;
-
   const validate = (fieldValues = values) => {
     let temp = { ...errors };
     if ("ProductName" in fieldValues)
@@ -162,23 +261,28 @@ export default function OrderForm(props) {
     setErrors({
       ...temp,
     });
+
     if (
-      fieldValues.ProductName &&
+      productNameAutoComplete &&
       fieldValues.QNT &&
       fieldValues.total &&
       fieldValues.TotalSize &&
-      fieldValues.OrderName &&
-      fieldValues.state &&
+      orderNameAutoComplete &&
+      stateNameAutoComplete &&
       fieldValues.cost &&
       fieldValues.partno &&
       fieldValues.Totalboxes &&
-      fieldValues.bkno &&
-      fieldValues.Customer &&
+      bknoAutoComplete &&
+      customerNameAutoComplete &&
       selectedDate &&
       availabilityDate &&
       deliveryDate
     ) {
-      return true;
+      if (availabilityDate >= selectedDate && deliveryDate >= selectedDate) {
+        return true;
+      }
+
+      return false;
       // if (fieldValues == values)
       //   return Object.values(temp).every((x) => x == "");
     }
@@ -190,6 +294,8 @@ export default function OrderForm(props) {
 
   if (costValueForProduct) {
     values.cost = costValueForProduct;
+  } else {
+    values.cost = "";
   }
   if (pcsinboxForProduct) {
     if (values.QNT) {
@@ -205,49 +311,84 @@ export default function OrderForm(props) {
     e.preventDefault();
     if (validate()) {
       console.log("sending the data");
-      if (!values.bkno) values.bkno = "";
       if (!values.Notes) values.Notes = "";
       axios({
         method: "post",
-        url: "http://localhost:8800/api/OrderManipulate/post",
+        url: `${REQUESTURL}/api/OrderManipulate/post`,
         data: {
-          productName: values.ProductName,
+          productName: productNameAutoComplete,
           QNT: values.QNT,
           cost: values.cost,
           total: values.total,
-          customer: values.Customer,
+          customer: customerNameAutoComplete,
           Date: selectedDate,
-          orderName: values.OrderName,
-          state: values.state,
+          orderName: orderNameAutoComplete,
+          state: stateNameAutoComplete,
           availabilityDate: availabilityDate,
           deliveryDate: deliveryDate,
           partNo: values.partno,
           totalSize: values.TotalSize,
-          BK_NO: values.bkno,
+          BK_NO: bknoAutoComplete,
           totalBoxes: values.Totalboxes,
           notes: values.Notes,
         },
       }).then((response) => {
-        console.log(response);
-        toast.success("Item inserted", {
-          position: "bottom-center",
-          autoClose: 1000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-        window.location.reload();
+        if (response.data.status === "not ok") {
+          toast.error(response.data.errmsg, {
+            position: "bottom-center",
+            autoClose: 1000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        } else {
+          toast.success("Item inserted", {
+            position: "bottom-center",
+            autoClose: 1000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          window.location.reload();
+        }
       });
-    }
+    } else
+      toast.error("Incorrect Field Inputs", {
+        position: "bottom-center",
+        autoClose: 1000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
   };
 
   return (
     <Form style={{ marginLeft: "50px" }} onSubmit={handleSubmit}>
       <Grid container>
         <Grid item xs={6}>
-          <FormControl variant="outlined" className={classes.formControl}>
+          <Autocomplete
+            // disablePortal
+            name="Product Name"
+            options={onlyProducts}
+            onChange={handleProductNameChange}
+            value={productNameAutoComplete}
+            sx={{ width: 415 }}
+            renderInput={(params) => (
+              <Controls.Input
+                {...params}
+                label="Product Name"
+                name="Product Name"
+                error={productNameCheck ? "This field is required" : ""}
+              />
+            )}
+          />
+          {/* <FormControl variant="outlined" className={classes.formControl}>
             <InputLabel htmlFor="outlined-age-native-simple">
               Product Name
             </InputLabel>
@@ -271,7 +412,7 @@ export default function OrderForm(props) {
                 );
               })}
             </Select>
-          </FormControl>
+          </FormControl> */}
 
           <Controls.Input
             type="Number"
@@ -290,7 +431,24 @@ export default function OrderForm(props) {
             error={errors.total}
           />
 
-          <FormControl variant="outlined" className={classes.formControl}>
+          <Autocomplete
+            // disablePortal
+            name="Customer"
+            options={onlyCustomers}
+            onChange={handleCustomerNameChange}
+            value={customerNameAutoComplete}
+            sx={{ width: 415 }}
+            renderInput={(params) => (
+              <Controls.Input
+                {...params}
+                label="Customer"
+                name="Customer"
+                error={customerNameCheck ? "This field is required" : ""}
+              />
+            )}
+          />
+
+          {/* <FormControl variant="outlined" className={classes.formControl}>
             <InputLabel htmlFor="outlined-age-native-simple">
               Customer
             </InputLabel>
@@ -311,9 +469,26 @@ export default function OrderForm(props) {
                 );
               })}
             </Select>
-          </FormControl>
+          </FormControl> */}
 
-          <FormControl variant="outlined" className={classes.formControl}>
+          <Autocomplete
+            // disablePortal
+            name="Order"
+            options={onlyOrders}
+            onChange={handleOrderNameChange}
+            value={orderNameAutoComplete}
+            sx={{ width: 415 }}
+            renderInput={(params) => (
+              <Controls.Input
+                {...params}
+                label="Order"
+                name="Order"
+                error={orderNameCheck ? "This field is required" : ""}
+              />
+            )}
+          />
+
+          {/* <FormControl variant="outlined" className={classes.formControl}>
             <InputLabel htmlFor="outlined-age-native-simple">
               Select Order Name
             </InputLabel>
@@ -334,7 +509,7 @@ export default function OrderForm(props) {
                 );
               })}
             </Select>
-          </FormControl>
+          </FormControl> */}
 
           {/* <Controls.Input
             label="Order Name"
@@ -361,7 +536,25 @@ export default function OrderForm(props) {
               />
             </Grid>
           </MuiPickersUtilsProvider>
-          <FormControl variant="outlined" className={classes.formControl}>
+
+          <Autocomplete
+            // disablePortal
+            name="State"
+            options={onlyStates}
+            onChange={handleStateNameChange}
+            value={stateNameAutoComplete}
+            sx={{ width: 415 }}
+            renderInput={(params) => (
+              <Controls.Input
+                {...params}
+                label="state"
+                name="state"
+                error={stateNameCheck ? "This field is required" : ""}
+              />
+            )}
+          />
+
+          {/* <FormControl variant="outlined" className={classes.formControl}>
             <InputLabel htmlFor="outlined-age-native-simple">state</InputLabel>
             <Select
               native
@@ -380,7 +573,7 @@ export default function OrderForm(props) {
                 );
               })}
             </Select>
-          </FormControl>
+          </FormControl> */}
 
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Grid container justifyContent="space-around">
@@ -482,7 +675,24 @@ export default function OrderForm(props) {
             value={values.Totalboxes}
             onChange={handleInputChange}
           />
-          <FormControl variant="outlined" className={classes.formControl}>
+          <Autocomplete
+            // disablePortal
+            name="Bkno"
+            options={onlybkno}
+            onChange={handleBknoChange}
+            value={bknoAutoComplete}
+            sx={{ width: 415 }}
+            renderInput={(params) => (
+              <Controls.Input
+                {...params}
+                label="Bkno"
+                name="Bkno"
+                error={bknoCheck ? "This field is required" : ""}
+              />
+            )}
+          />
+
+          {/* <FormControl variant="outlined" className={classes.formControl}>
             <InputLabel htmlFor="outlined-age-native-simple">BK NO</InputLabel>
             <Select
               native
@@ -501,6 +711,7 @@ export default function OrderForm(props) {
               })}
             </Select>
           </FormControl>
+           */}
           <Controls.Input
             label="Notes"
             name="Notes"
@@ -520,8 +731,13 @@ export default function OrderForm(props) {
               text="Reset"
               color="default"
               onClick={() => {
-                setCostValueForProduct();
+                setCostValueForProduct(0);
                 resetForm();
+                setProductNameAutoComplete("");
+                setCustomerNameAutoComplete("");
+                setOrderNameAutoComplete("");
+                setStateNameAutoComplete("");
+                setBknoAutoComplete("");
               }}
             />
           </div>

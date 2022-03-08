@@ -1,3 +1,5 @@
+import { REQUESTURL } from "../Constants";
+
 import React, { useState } from "react";
 import { Typography } from "@material-ui/core";
 import InputLabel from "@mui/material/InputLabel";
@@ -12,26 +14,28 @@ import "jspdf-autotable";
 import { useEffect } from "react";
 import axios from "axios";
 import ReactHTMLTableToExcel from "react-html-table-to-excel";
+import Autocomplete from "@mui/material/Autocomplete";
+import Controls from "../components/controls/Controls";
 
 function createData(ProductName, QNT, cost, total, state, totalsize) {
   return { ProductName, QNT, cost, total, state, totalsize };
 }
 
-// const rows = [
-//   createData("Cupcake", 305, 3.7, "$2456", "recived", 0.345),
-//   createData("Donut", 452, 25.0, "$2456", "cancelld", 0.645),
-//   createData("Eclair", 262, 16.0, "$2456", "recived", 0.945),
-//   createData("Frozen yoghurt", 159, 6.0, "$2456", "recived ", 0.245),
-//   createData("Gingerbread", 356, 16.0, "$2456", "cancelled", 0.645),
-//   createData("Honeycomb", 408, 3.2, "$2456", "cancelld", 0.545),
-//   createData("Ice cream sandwich", 237, 9.0, "$2456", "recived", 0.845),
-//   createData("Jelly Bean", 375, 0.0, "$2456", "cancelld", 0.45),
-//   createData("KitKat", 518, 26.0, "$2456", "recived ", 0.59),
-//   createData("Lollipop", 392, 0.2, "$2456", "recived ", 0.145),
-//   createData("Marshmallow", 318, 0, "$2456", "cancelled", 0.345),
-//   createData("Nougat", 360, 19.0, "$2456", "cancelled", 0.645),
-//   createData("Oreo", 437, 18.0, "$2456", "cancelled", 0.745),
-// ].sort((a, b) => (a.QNT < b.QNT ? -1 : 1));
+const rows = [
+  createData("Cupcake", 305, 3.7, "$2456", "recived", 0.345),
+  createData("Donut", 452, 25.0, "$2456", "cancelld", 0.645),
+  createData("Eclair", 262, 16.0, "$2456", "recived", 0.945),
+  createData("Frozen yoghurt", 159, 6.0, "$2456", "recived ", 0.245),
+  createData("Gingerbread", 356, 16.0, "$2456", "cancelled", 0.645),
+  createData("Honeycomb", 408, 3.2, "$2456", "cancelld", 0.545),
+  createData("Ice cream sandwich", 237, 9.0, "$2456", "recived", 0.845),
+  createData("Jelly Bean", 375, 0.0, "$2456", "cancelld", 0.45),
+  createData("KitKat", 518, 26.0, "$2456", "recived ", 0.59),
+  createData("Lollipop", 392, 0.2, "$2456", "recived ", 0.145),
+  createData("Marshmallow", 318, 0, "$2456", "cancelled", 0.345),
+  createData("Nougat", 360, 19.0, "$2456", "cancelled", 0.645),
+  createData("Oreo", 437, 18.0, "$2456", "cancelled", 0.745),
+].sort((a, b) => (a.QNT < b.QNT ? -1 : 1));
 
 let staticRows = [];
 const Root = styled("div")`
@@ -91,26 +95,89 @@ const CustomTablePagination = styled(TablePaginationUnstyled)`
 function Report() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [allCustomers, setAllCustomers] = React.useState([]);
-  const [allData, setAllData] = React.useState([]);
 
-  const [rowsData, setRowsData] = React.useState([]);
+  const [allCustomers, setAllCustomers] = React.useState([]);
+  const [allBrands, setAllBrands] = React.useState([]);
+  const [allOrders, setAllOrders] = React.useState([]);
+  const [allBkno, setAllBkno] = React.useState([]);
+
+  const [brandAutoComplete, setBrandAutoComplete] = React.useState("");
+  const [orderAutoComplete, setOrderAutoComplete] = React.useState("");
+  const [customerAutoComplete, setCustomerAutoComplete] = React.useState("");
+  const [bknoAutoComplete, setBknoAutoComplete] = React.useState("");
+
+  const [allOrdersData, setAllOrdersData] = React.useState([]);
+  const [allItemsData, setAllItemsData] = React.useState([]);
+  const [rowsData, setRowsData] = React.useState();
 
   useEffect(() => {
     axios({
       method: "get",
-      url: "http://localhost:8800/api/ReportManipulate/get",
+      url: `${REQUESTURL}/api/ItemManipulate/get`,
     }).then((response) => {
-      staticRows = response.data;
-      setRowsData(staticRows);
-      setAllData(staticRows);
+      const result = response.data;
+      setAllItemsData(result);
     });
     axios({
       method: "get",
-      url: "http://localhost:8800/api/GetProductNames/getCustomer",
+      url: `${REQUESTURL}/api/OrderManipulate/get`,
     }).then((response) => {
       const result = response.data;
-      setAllCustomers(result);
+      console.log(result);
+
+      setAllOrdersData(result);
+    });
+
+    axios({
+      method: "get",
+      url: `${REQUESTURL}/api/AddBrand/get`,
+    }).then((response) => {
+      const result = response.data;
+      let temp = [];
+      for (let index = 0; index < response.data.length; index++) {
+        temp.push(response.data[index].Brand);
+      }
+      temp.push("All");
+      setAllBrands(temp);
+    });
+    axios({
+      method: "get",
+      url: `${REQUESTURL}/api/GetProductNames/getCustomer`,
+    }).then((response) => {
+      const result = response.data;
+      let temp = [];
+      for (let index = 0; index < response.data.length; index++) {
+        temp.push(response.data[index].customer);
+      }
+      temp.push("All");
+
+      setAllCustomers(temp);
+    });
+    axios({
+      method: "get",
+      url: `${REQUESTURL}/api/GetProductNames/getOrder`,
+    }).then((response) => {
+      const result = response.data;
+      let temp = [];
+      for (let index = 0; index < response.data.length; index++) {
+        temp.push(response.data[index].order);
+      }
+      temp.push("All");
+
+      setAllOrders(temp);
+    });
+    axios({
+      method: "get",
+      url: `${REQUESTURL}/api/GetProductNames/getBkno`,
+    }).then((response) => {
+      const result = response.data;
+      let temp = [];
+      for (let index = 0; index < response.data.length; index++) {
+        temp.push(response.data[index].bkno);
+      }
+      temp.push("All");
+
+      setAllBkno(temp);
     });
   }, []);
 
@@ -128,26 +195,22 @@ function Report() {
   };
 
   const [openTable, setOpenTable] = useState(false);
-  const [reportByOrderNo, setReportByOrderNo] = React.useState("");
   const [open1, setOpen1] = React.useState(false);
-  const [reportByBKNo, setReportByBKNo] = React.useState("");
   const [open2, setOpen2] = React.useState(false);
-  const [reportByBrand, setReportByBrand] = React.useState("");
   const [open3, setOpen3] = React.useState(false);
 
-  const [reportByCustomer, setReportByCustomer] = React.useState("");
   const [open4, setOpen4] = React.useState(false);
 
-  const handleChange1 = (event) => {
-    setReportByOrderNo(event.target.value);
+  const handleChange1 = (value) => {
     setOpenTable(true);
   };
-  const handleChange2 = (event) => {
-    setReportByBKNo(event.target.value);
+  const handleChange2 = (value) => {
     setOpenTable(true);
   };
-  const handleChange3 = (event) => {
-    setReportByBrand(event.target.value);
+  const handleChange3 = (value) => {
+    setOpenTable(true);
+  };
+  const handleChange4 = (value) => {
     setOpenTable(true);
   };
 
@@ -180,6 +243,78 @@ function Report() {
     setOpen4(true);
   };
 
+  const handleBrandNameChange = (e, value) => {
+    setRowsData([]);
+    setBrandAutoComplete(value);
+    handleChange3(value);
+    let temp = [];
+    if (value === "All") {
+      temp = allOrdersData;
+    } else {
+      for (let i = 0; i < allItemsData.length; i++) {
+        if (allItemsData[i].brand === value) {
+          let flagValue = allItemsData[i].productName;
+          for (let j = 0; j < allOrdersData.length; j++) {
+            if (allOrdersData[j].ProductName === flagValue) {
+              temp.push(allOrdersData[j]);
+            }
+          }
+        }
+      }
+    }
+    setRowsData(temp);
+  };
+  const handleOrderNameChange = (e, value) => {
+    setRowsData([]);
+    setOrderAutoComplete(value);
+    handleChange1(value);
+    let temp = [];
+    if (value === "All") {
+      temp = allOrdersData;
+    } else {
+      for (let i = 0; i < allOrdersData.length; i++) {
+        console.log(allOrdersData[i].ordername, "-", value);
+        if (allOrdersData[i].ordername === value) {
+          temp.push(allOrdersData[i]);
+        }
+      }
+    }
+    setRowsData(temp);
+  };
+  const handleCustomerNameChange = (e, value) => {
+    setRowsData([]);
+    setCustomerAutoComplete(value);
+    handleChange4(value);
+    let temp = [];
+    if (value === "All") {
+      temp = allOrdersData;
+    } else {
+      for (let i = 0; i < allOrdersData.length; i++) {
+        if (allOrdersData[i].customer === value) {
+          temp.push(allOrdersData[i]);
+        }
+      }
+    }
+
+    setRowsData(temp);
+  };
+  const handleBknoChange = (e, value) => {
+    setRowsData([]);
+    setBknoAutoComplete(value);
+    handleChange2(value);
+    let temp = [];
+    if (value === "All") {
+      temp = allOrdersData;
+    } else {
+      for (let i = 0; i < allOrdersData.length; i++) {
+        if (allOrdersData[i].BKNO === value) {
+          temp.push(allOrdersData[i]);
+        }
+      }
+    }
+    setRowsData(temp);
+  };
+
   const downloadPdf = () => {
     const doc = new jsPDF();
     doc.text("Order Report", 80, 10);
@@ -203,12 +338,33 @@ function Report() {
     <>
       <Typography
         style={{
-          marginTop: "90px",
+          marginTop: "120px",
           display: "flex",
           justifyContent: "space-evenly",
         }}
       >
-        <FormControl sx={{ m: 1, minWidth: 190 }}>
+        {/* Order name */}
+        <Autocomplete
+          // disablePortal
+          open={open1}
+          onClose={handleClose1}
+          onOpen={handleOpen1}
+          name="Order Name"
+          options={allOrders}
+          onChange={handleOrderNameChange}
+          value={orderAutoComplete}
+          sx={{ width: 215 }}
+          renderInput={(params) => (
+            <Controls.Input
+              {...params}
+              label="Reports By Order Name"
+              name="OrderName"
+            />
+          )}
+        />
+        {/* Order name */}
+
+        {/* <FormControl sx={{ m: 1, minWidth: 190 }}>
           <InputLabel id="demo-controlled-open-select-label">
             Report by order no
           </InputLabel>
@@ -234,9 +390,26 @@ function Report() {
             <MenuItem value={20}>All customer</MenuItem>
             <MenuItem value={30}>All state</MenuItem>
           </Select>
-        </FormControl>
+        </FormControl> */}
 
-        <FormControl sx={{ m: 1, minWidth: 190 }}>
+        {/* bkno */}
+        <Autocomplete
+          // disablePortal
+          open={open2}
+          onClose={handleClose2}
+          onOpen={handleOpen2}
+          name="Reports By Bkno"
+          options={allBkno}
+          onChange={handleBknoChange}
+          value={bknoAutoComplete}
+          sx={{ width: 215 }}
+          renderInput={(params) => (
+            <Controls.Input {...params} label="Reports By Bkno" name="Bkno" />
+          )}
+        />
+        {/* bkno */}
+
+        {/* <FormControl sx={{ m: 1, minWidth: 190 }}>
           <InputLabel id="demo-controlled-open-select-label">
             Report by bk no
           </InputLabel>
@@ -262,9 +435,25 @@ function Report() {
             <MenuItem value={20}>All customer</MenuItem>
             <MenuItem value={30}>All state</MenuItem>
           </Select>
-        </FormControl>
+        </FormControl> */}
 
-        <FormControl sx={{ m: 1, minWidth: 190 }}>
+        {/* Brands */}
+        <Autocomplete
+          // disablePortal
+          name="Brand"
+          open={open3}
+          onClose={handleClose3}
+          onOpen={handleOpen3}
+          options={allBrands}
+          onChange={handleBrandNameChange}
+          value={brandAutoComplete}
+          sx={{ width: 215 }}
+          renderInput={(params) => (
+            <Controls.Input {...params} label="Reports By Brand" name="Brand" />
+          )}
+        />
+        {/* Brands */}
+        {/* <FormControl sx={{ m: 1, minWidth: 190 }}>
           <InputLabel id="demo-controlled-open-select-label">
             Report by brand
           </InputLabel>
@@ -290,9 +479,30 @@ function Report() {
             <MenuItem value={20}>All customer</MenuItem>
             <MenuItem value={30}>All state</MenuItem>
           </Select>
-        </FormControl>
+        </FormControl> */}
 
-        <FormControl sx={{ m: 1, minWidth: 190 }}>
+        {/* Customer */}
+        <Autocomplete
+          // disablePortal
+          open={open4}
+          onClose={handleClose4}
+          onOpen={handleOpen4}
+          name="Customer"
+          options={allCustomers}
+          onChange={handleCustomerNameChange}
+          value={customerAutoComplete}
+          sx={{ width: 215 }}
+          renderInput={(params) => (
+            <Controls.Input
+              {...params}
+              label="Reports By Customer"
+              name="Customer"
+            />
+          )}
+        />
+        {/* Customer */}
+
+        {/* <FormControl sx={{ m: 1, minWidth: 190 }}>
           <InputLabel id="demo-controlled-open-select-label">
             Report by Customer
           </InputLabel>
@@ -335,7 +545,7 @@ function Report() {
               );
             })}
           </Select>
-        </FormControl>
+        </FormControl> */}
       </Typography>
       <Typography
         style={{
@@ -460,7 +670,10 @@ function Report() {
                 }}
                 variant="contained"
                 color="primary"
-                onClick={() => setOpenTable(false)}
+                onClick={() => {
+                  setOpenTable(false);
+                  setRowsData([]);
+                }}
               >
                 Clear Report
               </Button>

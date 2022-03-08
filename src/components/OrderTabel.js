@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { DataGrid } from "@material-ui/data-grid";
 import axios from "axios";
+import { REQUESTURL } from "../Constants";
 
 // const columns = [
 //   { field: "id", headerName: "ID", width: 95 },
@@ -450,7 +451,7 @@ function OrderTabel() {
   useEffect(() => {
     axios({
       method: "get",
-      url: "http://localhost:8800/api/OrderManipulate/get",
+      url: `${REQUESTURL}/api/OrderManipulate/get`,
     }).then((response) => {
       let datatoprint = response.data;
       for (const element of datatoprint) {

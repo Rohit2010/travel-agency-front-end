@@ -2,15 +2,18 @@ import React, { useState, useEffect } from "react";
 import { Grid } from "@material-ui/core";
 import Controls from "./controls/Controls";
 import { useForm, Form } from "./useForm";
-import InputLabel from "@material-ui/core/InputLabel";
 import FormHelperText from "@material-ui/core/FormHelperText";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
 import NativeSelect from "@material-ui/core/NativeSelect";
+
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { REQUESTURL } from "../Constants";
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
@@ -42,7 +45,7 @@ export default function UpdateForm(props) {
   useEffect(() => {
     axios({
       method: "get",
-      url: "http://localhost:8800/api/AddBrand/get",
+      url: `${REQUESTURL}/api/AddBrand/get`,
     }).then((response) => {
       console.log(response.data);
       setBrandData(response.data);
@@ -136,7 +139,7 @@ export default function UpdateForm(props) {
       console.log(values);
       axios({
         method: "post",
-        url: "http://localhost:8800/api/ItemManipulate/update",
+        url: `${REQUESTURL}/api/ItemManipulate/update`,
         data: {
           id: values.id,
           brand: values.Brand,

@@ -11,6 +11,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
+import { REQUESTURL } from "../../Constants";
 
 const initialFValues = {
   id: 0,
@@ -44,22 +45,33 @@ export default function State(props) {
 
       axios({
         method: "post",
-        url: "http://localhost:8800/api/GetProductNames/addState",
+        url: `${REQUESTURL}/api/GetProductNames/addState`,
         data: {
           state: values.state,
         },
       }).then((response) => {
-        console.log(response);
-        toast.success("Item inserted", {
-          position: "bottom-center",
-          autoClose: 1000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-        window.location.reload();
+        if (response.data.status === "not ok") {
+          toast.error(response.data.errmsg, {
+            position: "bottom-center",
+            autoClose: 1000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        } else {
+          toast.success("Item inserted", {
+            position: "bottom-center",
+            autoClose: 1000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          window.location.reload();
+        }
       });
     }
   };

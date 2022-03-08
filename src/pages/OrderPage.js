@@ -15,6 +15,7 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import Bkno from "../components/formcontrols/Bkno";
 import State from "../components/formcontrols/State";
+import { REQUESTURL } from "../Constants";
 
 function OrderPage() {
   const [openPopup, setOpenPopup] = useState(false);
@@ -37,7 +38,7 @@ function OrderPage() {
 
     axios({
       method: "post",
-      url: "http://localhost:8800/api/OrderManipulate/postexcel",
+      url: `${REQUESTURL}/api/OrderManipulate/postexcel`,
       data: {
         excelData: orderDataFromFile,
       },
@@ -63,15 +64,15 @@ function OrderPage() {
           marginTop: "110px",
           width: "100%",
           display: "flex",
-          justifyContent: "space-between",
+          justifyContent: "space-around",
         }}
       >
         {/* Table code will be here in this div */}
         <Typography
           style={{
-            marginLeft: "42vw",
+            marginLeft: "12vw",
             display: "flex",
-            justifyContent: "center",
+            justifyContent: "space-around",
           }}
         >
           <Typography
@@ -90,16 +91,20 @@ function OrderPage() {
             onClick={() => {
               setOpenPopup(true);
             }}
-            style={{ width: "150px" }}
+            style={{ width: "150px", marginRight: "20px" }}
           >
             Add order
           </Button>
 
           <Controls.Input
+            variant="standard"
             type="file"
             name="excel"
             onChange={onFileHandling}
-            style={{ border: "1px solid blue" }}
+            style={{
+              marginRight: "5px",
+              marginTop: "4px",
+            }}
           />
 
           <Button
@@ -108,7 +113,7 @@ function OrderPage() {
             color="primary"
             startIcon={<AddIcon />}
             onClick={submitExcelOrders}
-            style={{ width: "250px" }}
+            style={{ width: "150px" }}
           >
             Upload
           </Button>
