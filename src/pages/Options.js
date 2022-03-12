@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Brand from "../components/formcontrols/Brand";
 import Popup from "../components/Popup";
 import AddIcon from "@material-ui/icons/Add";
+import RemoveIcon from "@material-ui/icons/Remove";
 import Customer from "../components/formcontrols/Customer";
 import Bkno from "../components/formcontrols/Bkno";
 import State from "../components/formcontrols/State";
@@ -17,12 +18,12 @@ import Button from "@material-ui/core/Button";
 import axios from "axios";
 
 const brandColumns = [
-  {
-    field: "id",
-    headerName: "ID",
-    width: 95,
-    headerClassName: "super-app-theme--header",
-  },
+  // {
+  //   field: "id",
+  //   headerName: "ID",
+  //   width: 95,
+  //   headerClassName: "super-app-theme--header",
+  // },
   {
     field: "Brand",
     headerName: "Brand",
@@ -32,12 +33,12 @@ const brandColumns = [
   },
 ];
 const customerColumns = [
-  {
-    field: "id",
-    headerName: "ID",
-    width: 95,
-    headerClassName: "super-app-theme--header",
-  },
+  // {
+  //   field: "id",
+  //   headerName: "ID",
+  //   width: 95,
+  //   headerClassName: "super-app-theme--header",
+  // },
   {
     field: "customer",
     headerName: "Customer",
@@ -47,40 +48,42 @@ const customerColumns = [
   },
 ];
 const bknoColumns = [
-  {
-    field: "id",
-    headerName: "ID",
-    width: 95,
-    headerClassName: "super-app-theme--header",
-  },
+  // {
+  //   field: "id",
+  //   headerName: "ID",
+  //   width: 95,
+  //   headerClassName: "super-app-theme--header",
+  // },
   {
     field: "bkno",
     headerName: "BKNO",
     width: 150,
+    editable: true,
     headerClassName: "super-app-theme--header",
   },
 ];
 const stateColumns = [
-  {
-    field: "id",
-    headerName: "ID",
-    width: 95,
-    headerClassName: "super-app-theme--header",
-  },
+  // {
+  //   field: "id",
+  //   headerName: "ID",
+  //   width: 95,
+  //   headerClassName: "super-app-theme--header",
+  // },
   {
     field: "state",
     headerName: "State",
     width: 190,
+    editable: true,
     headerClassName: "super-app-theme--header",
   },
 ];
 const orderColumns = [
-  {
-    field: "id",
-    headerName: "ID",
-    width: 95,
-    headerClassName: "super-app-theme--header",
-  },
+  // {
+  //   field: "id",
+  //   headerName: "ID",
+  //   width: 95,
+  //   headerClassName: "super-app-theme--header",
+  // },
   {
     field: "order",
     headerName: "Order Name",
@@ -124,21 +127,60 @@ function Options() {
   const orderRef = useRef();
   // refs
 
+  // updateData
+  const [updateBrandData, setUpdateBrandData] = useState([]);
+  const [updateCustomerData, setUpdateCustomerData] = useState([]);
+  const [updateBknoData, setUpdateBknoData] = useState([]);
+  const [updateStateData, setUpdateStateData] = useState([]);
+  const [updateOrderData, setUpdateOrderData] = useState([]);
+  // updateData
+
+  // update popups
+  const [updateBrandPopup, setUpdateBrandPopup] = useState(false);
+  const [updateCustomerPoppup, setUpdateCustomerPoppup] = useState(false);
+  const [updateBknoPopup, setUpdateBknoPopup] = useState(false);
+  const [updateStatePopup, setUpdateStatePopup] = useState(false);
+  const [updateOrderPopup, setUpdateOrderPopup] = useState(false);
+
+  const [newUpdatedValues, setNewUpdatedValues] = useState({});
+  // update popups
+
+  // helping function
+  function handleUpdateValues(rows, allData, setUpdateData) {
+    if (rows.length === 1) {
+      let data = allData;
+      if (data) {
+        for (let index = 0; index < data.length; index++) {
+          if (data[index].id === rows[0]) {
+            setUpdateData(data[index]);
+            break;
+          }
+        }
+      }
+    }
+  }
+  // helping function
+
   // SelectionChange
   const onBrandSelectionChanges = (rows) => {
     setBrandSelection(rows);
+    handleUpdateValues(rows, brandData, setUpdateBrandData);
   };
   const onCustomerSelectionChanges = (rows) => {
     setCustomerSelection(rows);
+    handleUpdateValues(rows, customerData, setUpdateCustomerData);
   };
   const onBknoSelectionChanges = (rows) => {
     setBknoSelection(rows);
+    handleUpdateValues(rows, bknoData, setUpdateBknoData);
   };
   const onStateSelectionChanges = (rows) => {
     setStateSelection(rows);
+    handleUpdateValues(rows, stateData, setUpdateStateData);
   };
   const onOrderSelectionChanges = (rows) => {
     setOrderSelection(rows);
+    handleUpdateValues(rows, orderData, setUpdateOrderData);
   };
   // SelectionChange
 
@@ -207,7 +249,7 @@ function Options() {
 
   // Deletion Handling
   const handleDeletedRows = (rows, path) => {
-    if (rows) {
+    if (rows.length > 0) {
       axios({
         method: "post",
         url: `${REQUESTURL}/api/Delete/${path}`,
@@ -238,6 +280,42 @@ function Options() {
   };
   // Deletion Handling
 
+  // Request for updata
+  function requestForUpdate(id, pre, newvalue, path) {
+    axios({
+      method: "post",
+      url: `${REQUESTURL}/api/update/${path}`,
+      data: {
+        id: id,
+        pre: pre,
+        new: newvalue,
+      },
+    }).then((response) => {
+      if (response.data.status === "ok") {
+        toast.success("Data Updated", {
+          position: "bottom-center",
+          autoClose: 1000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      } else {
+        toast.success("Something Went Wrong", {
+          position: "bottom-center",
+          autoClose: 1000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+    });
+  }
+  // Request for updata
+
   return (
     <Typography
       style={{
@@ -255,66 +333,6 @@ function Options() {
           justifyContent: "space-between",
         }}
       >
-        <Button
-          text="Add Brand"
-          variant="outlined"
-          color="primary"
-          startIcon={<AddIcon />}
-          onClick={() => {
-            setBrandPopup(true);
-          }}
-          style={{ width: "250px" }}
-        >
-          Add Brand
-        </Button>
-        <Button
-          text="Add Customer"
-          variant="outlined"
-          color="primary"
-          startIcon={<AddIcon />}
-          onClick={() => {
-            setCustomerPoppup(true);
-          }}
-          style={{ width: "250px" }}
-        >
-          Add Customer
-        </Button>
-        <Button
-          text="Add Order"
-          variant="outlined"
-          color="primary"
-          startIcon={<AddIcon />}
-          onClick={() => {
-            setOrderPopup(true);
-          }}
-          style={{ width: "250px" }}
-        >
-          Add Order Name
-        </Button>
-        <Button
-          text="Add Bkno"
-          variant="outlined"
-          color="primary"
-          startIcon={<AddIcon />}
-          onClick={() => {
-            setBknoPopup(true);
-          }}
-          style={{ width: "250px" }}
-        >
-          Add Bkno
-        </Button>
-        <Button
-          text="Add State"
-          variant="outlined"
-          color="primary"
-          startIcon={<AddIcon />}
-          onClick={() => {
-            setStatePopup(true);
-          }}
-          style={{ width: "250px" }}
-        >
-          Add State
-        </Button>
         <Popup
           title="Enter Order Name"
           openPopup={orderPopup}
@@ -372,17 +390,35 @@ function Options() {
               },
             }}
           >
-            <Button
-              text="Delete Brand"
-              variant="outlined"
-              color="primary"
-              onClick={() => {
-                handleDeletedRows(brandSelection, "brand");
+            <Typography
+              style={{
+                display: "flex",
+                gap: "5px",
+                marginBottom: "5px",
               }}
-              style={{ width: "150px", marginBottom: "10px" }}
             >
-              Delete Brand
-            </Button>
+              <Button
+                text="Add Brand"
+                variant="outlined"
+                color="primary"
+                startIcon={<AddIcon />}
+                onClick={() => {
+                  setBrandPopup(true);
+                }}
+                style={{ width: "70px" }}
+              ></Button>
+              <Button
+                text="Delete Brand"
+                variant="outlined"
+                color="primary"
+                startIcon={<RemoveIcon />}
+                style={{ width: "70px" }}
+                onClick={() => {
+                  handleDeletedRows(brandSelection, "brand");
+                }}
+              ></Button>
+            </Typography>
+
             <DataGrid
               ref={brandRef}
               rows={brandData}
@@ -391,6 +427,28 @@ function Options() {
               checkboxSelection
               disableSelectionOnClick
               onSelectionModelChange={onBrandSelectionChanges}
+              onEditRowsModelChange={(rows) => {
+                let keyName = Object.keys(rows)[0];
+                if (keyName) {
+                  setNewUpdatedValues({
+                    ...newUpdatedValues,
+                    [keyName]: rows[keyName].Brand.value,
+                  });
+                } else {
+                  let id = Object.keys(newUpdatedValues)[0];
+                  let previousValue = "";
+                  for (let i = 0; i < brandData.length; i++) {
+                    if (brandData[i].id === id) {
+                      previousValue = brandData[i].Brand;
+                      break;
+                    }
+                  }
+                  let newValue = newUpdatedValues[id];
+                  if (previousValue !== newValue)
+                    requestForUpdate(id, previousValue, newValue, "brand");
+                  setNewUpdatedValues({});
+                }
+              }}
             />
           </Box>
         </Typography>
@@ -407,17 +465,35 @@ function Options() {
               },
             }}
           >
-            <Button
-              text="Delete Customer"
-              variant="outlined"
-              color="primary"
-              onClick={() => {
-                handleDeletedRows(customerSelection, "customer");
+            {" "}
+            <Typography
+              style={{
+                display: "flex",
+                gap: "5px",
+                marginBottom: "5px",
               }}
-              style={{ width: "180px", marginBottom: "10px" }}
             >
-              Delete Customer
-            </Button>
+              <Button
+                text="Add Customer"
+                variant="outlined"
+                color="primary"
+                startIcon={<AddIcon />}
+                onClick={() => {
+                  setCustomerPoppup(true);
+                }}
+                style={{ width: "70px" }}
+              ></Button>
+              <Button
+                text="Delete Customer"
+                variant="outlined"
+                color="primary"
+                onClick={() => {
+                  handleDeletedRows(customerSelection, "customer");
+                }}
+                startIcon={<RemoveIcon />}
+                style={{ width: "70px" }}
+              ></Button>
+            </Typography>
             <DataGrid
               ref={customerRef}
               rows={customerData}
@@ -426,6 +502,28 @@ function Options() {
               checkboxSelection
               disableSelectionOnClick
               onSelectionModelChange={onCustomerSelectionChanges}
+              onEditRowsModelChange={(rows) => {
+                let keyName = Object.keys(rows)[0];
+                if (keyName) {
+                  setNewUpdatedValues({
+                    ...newUpdatedValues,
+                    [keyName]: rows[keyName].customer.value,
+                  });
+                } else {
+                  let id = Object.keys(newUpdatedValues)[0];
+                  let previousValue = "";
+                  for (let i = 0; i < customerData.length; i++) {
+                    if (customerData[i].id === id) {
+                      previousValue = customerData[i].customer;
+                      break;
+                    }
+                  }
+                  let newValue = newUpdatedValues[id];
+                  if (previousValue !== newValue)
+                    requestForUpdate(id, previousValue, newValue, "customer");
+                  setNewUpdatedValues({});
+                }
+              }}
             />
           </Box>
         </Typography>
@@ -442,17 +540,34 @@ function Options() {
               },
             }}
           >
-            <Button
-              text="Delete Order"
-              variant="outlined"
-              color="primary"
-              onClick={() => {
-                handleDeletedRows(orderSelection, "order");
+            <Typography
+              style={{
+                display: "flex",
+                gap: "5px",
+                marginBottom: "5px",
               }}
-              style={{ width: "150px", marginBottom: "10px" }}
             >
-              Delete Order
-            </Button>
+              <Button
+                text="Add Order"
+                variant="outlined"
+                color="primary"
+                startIcon={<AddIcon />}
+                onClick={() => {
+                  setOrderPopup(true);
+                }}
+                style={{ width: "70px" }}
+              ></Button>
+              <Button
+                text="Delete Order"
+                variant="outlined"
+                color="primary"
+                onClick={() => {
+                  handleDeletedRows(orderSelection, "order");
+                }}
+                startIcon={<RemoveIcon />}
+                style={{ width: "70px" }}
+              ></Button>
+            </Typography>
             <DataGrid
               ref={orderRef}
               rows={orderData}
@@ -461,6 +576,28 @@ function Options() {
               checkboxSelection
               disableSelectionOnClick
               onSelectionModelChange={onOrderSelectionChanges}
+              onEditRowsModelChange={(rows) => {
+                let keyName = Object.keys(rows)[0];
+                if (keyName) {
+                  setNewUpdatedValues({
+                    ...newUpdatedValues,
+                    [keyName]: rows[keyName].order.value,
+                  });
+                } else {
+                  let id = Object.keys(newUpdatedValues)[0];
+                  let previousValue = "";
+                  for (let i = 0; i < orderData.length; i++) {
+                    if (orderData[i].id === id) {
+                      previousValue = orderData[i].order;
+                      break;
+                    }
+                  }
+                  let newValue = newUpdatedValues[id];
+                  if (previousValue !== newValue)
+                    requestForUpdate(id, previousValue, newValue, "order");
+                  setNewUpdatedValues({});
+                }
+              }}
             />
           </Box>
         </Typography>
@@ -477,17 +614,34 @@ function Options() {
               },
             }}
           >
-            <Button
-              text="Delete BKNO"
-              variant="outlined"
-              color="primary"
-              onClick={() => {
-                handleDeletedRows(bknoSelection, "bkno");
+            <Typography
+              style={{
+                display: "flex",
+                gap: "5px",
+                marginBottom: "5px",
               }}
-              style={{ width: "180px", marginBottom: "10px" }}
             >
-              Delete BKNO
-            </Button>
+              <Button
+                text="Add Bkno"
+                variant="outlined"
+                color="primary"
+                startIcon={<AddIcon />}
+                onClick={() => {
+                  setBknoPopup(true);
+                }}
+                style={{ width: "70px" }}
+              ></Button>
+              <Button
+                text="Delete BKNO"
+                variant="outlined"
+                color="primary"
+                onClick={() => {
+                  handleDeletedRows(bknoSelection, "bkno");
+                }}
+                startIcon={<RemoveIcon />}
+                style={{ width: "70px" }}
+              ></Button>
+            </Typography>
             <DataGrid
               ref={bknoRef}
               rows={bknoData}
@@ -496,6 +650,28 @@ function Options() {
               checkboxSelection
               disableSelectionOnClick
               onSelectionModelChange={onBknoSelectionChanges}
+              onEditRowsModelChange={(rows) => {
+                let keyName = Object.keys(rows)[0];
+                if (keyName) {
+                  setNewUpdatedValues({
+                    ...newUpdatedValues,
+                    [keyName]: rows[keyName].bkno.value,
+                  });
+                } else {
+                  let id = Object.keys(newUpdatedValues)[0];
+                  let previousValue = "";
+                  for (let i = 0; i < bknoData.length; i++) {
+                    if (bknoData[i].id === id) {
+                      previousValue = bknoData[i].bkno;
+                      break;
+                    }
+                  }
+                  let newValue = newUpdatedValues[id];
+                  if (previousValue !== newValue)
+                    requestForUpdate(id, previousValue, newValue, "bkno");
+                  setNewUpdatedValues({});
+                }
+              }}
             />
           </Box>
         </Typography>
@@ -512,17 +688,34 @@ function Options() {
               },
             }}
           >
-            <Button
-              text="Delete State"
-              variant="outlined"
-              color="primary"
-              onClick={() => {
-                handleDeletedRows(stateSelection, "state");
+            <Typography
+              style={{
+                display: "flex",
+                gap: "5px",
+                marginBottom: "5px",
               }}
-              style={{ width: "180px", marginBottom: "10px" }}
             >
-              Delete State
-            </Button>
+              <Button
+                text="Add State"
+                variant="outlined"
+                color="primary"
+                startIcon={<AddIcon />}
+                onClick={() => {
+                  setStatePopup(true);
+                }}
+                style={{ width: "70px" }}
+              ></Button>
+              <Button
+                text="Delete State"
+                variant="outlined"
+                color="primary"
+                onClick={() => {
+                  handleDeletedRows(stateSelection, "state");
+                }}
+                startIcon={<RemoveIcon />}
+                style={{ width: "70px" }}
+              ></Button>
+            </Typography>
             <DataGrid
               ref={stateRef}
               rows={stateData}
@@ -531,6 +724,28 @@ function Options() {
               checkboxSelection
               disableSelectionOnClick
               onSelectionModelChange={onStateSelectionChanges}
+              onEditRowsModelChange={(rows) => {
+                let keyName = Object.keys(rows)[0];
+                if (keyName) {
+                  setNewUpdatedValues({
+                    ...newUpdatedValues,
+                    [keyName]: rows[keyName].state.value,
+                  });
+                } else {
+                  let id = Object.keys(newUpdatedValues)[0];
+                  let previousValue = "";
+                  for (let i = 0; i < stateData.length; i++) {
+                    if (stateData[i].id === id) {
+                      previousValue = stateData[i].state;
+                      break;
+                    }
+                  }
+                  let newValue = newUpdatedValues[id];
+                  if (previousValue !== newValue)
+                    requestForUpdate(id, previousValue, newValue, "state");
+                  setNewUpdatedValues({});
+                }
+              }}
             />
           </Box>
         </Typography>
