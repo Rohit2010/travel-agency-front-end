@@ -96,7 +96,8 @@ export default function Brand(props) {
             draggable: true,
             progress: undefined,
           });
-          window.location.reload();
+          props.setBrandPopup(false);
+          // window.location.reload();
         }
       });
     }

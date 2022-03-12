@@ -6,6 +6,7 @@ import Report from "./pages/Report";
 import ItemsPage from "./pages/ItemsPage";
 import OrderPage from "./pages/OrderPage";
 import Options from "./pages/Options";
+import "./app.css";
 
 function App() {
   return (

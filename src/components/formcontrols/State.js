@@ -70,7 +70,8 @@ export default function State(props) {
             draggable: true,
             progress: undefined,
           });
-          window.location.reload();
+          props.setStatePopup(false);
+          // window.location.reload();
         }
       });
     }

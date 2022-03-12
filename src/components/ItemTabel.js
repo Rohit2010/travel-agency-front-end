@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { DataGrid } from "@material-ui/data-grid";
 import axios from "axios";
 import { REQUESTURL } from "../Constants";
+import Box from "@mui/material/Box";
 
 // const columns = [
 //   { field: "id", headerName: "ID", width: 95 },
@@ -257,64 +258,80 @@ import { REQUESTURL } from "../Constants";
 //   },
 // ];
 const columns = [
-  { field: "id", headerName: "ID", width: 95 },
+  {
+    field: "id",
+    headerName: "ID",
+    width: 95,
+    headerClassName: "super-app-theme--header",
+  },
   {
     field: "Brand",
     headerName: "Brand",
-    width: 120,
+    width: 150,
     editable: true,
+    headerClassName: "super-app-theme--header",
   },
   {
     field: "ProductName",
     headerName: "Product Name",
-    width: 168,
+    width: 198,
     editable: true,
+    headerClassName: "super-app-theme--header",
   },
   {
     field: "description",
     headerName: "Description",
-    width: 150,
+    width: 180,
     editable: true,
+    headerClassName: "super-app-theme--header",
   },
   {
     field: "TradeName",
     headerName: "Trade Name",
-    width: 160,
+    width: 190,
+    headerClassName: "super-app-theme--header",
   },
   {
     field: "pcsinbox",
     headerName: "pcs inbox",
-    width: 138,
+    width: 168,
+    headerClassName: "super-app-theme--header",
   },
   {
     field: "minimumOrder",
     headerName: "Min order",
-    width: 138,
+    width: 168,
+    headerClassName: "super-app-theme--header",
   },
   {
     field: "cost",
     headerName: "cost",
-    width: 130,
+    width: 160,
+    headerClassName: "super-app-theme--header",
   },
   {
     field: "Long",
     headerName: "Long",
-    width: 130,
+    width: 160,
+    headerClassName: "super-app-theme--header",
   },
   {
     field: "Width",
     headerName: "Width",
-    width: 130,
+    width: 160,
+    headerClassName: "super-app-theme--header",
   },
   {
     field: "Height",
     headerName: "Height",
-    width: 130,
+    width: 160,
+    headerClassName: "super-app-theme--header",
   },
   {
     field: "boxSize",
     headerName: "box Size(M)",
-    width: 155,
+    width: 185,
+    headerClassName: "super-app-theme--header",
   },
 ];
 
@@ -499,12 +516,15 @@ function ItemTabel({ setSelectedRows, setUpdateRowData, selectedRows }) {
   };
 
   return (
-    <div
-      style={{
+    <Box
+      sx={{
         height: "470px",
         width: "100%",
         display: "flex",
         justifyContent: "center",
+        "& .super-app-theme--header": {
+          fontWeight: "900!important",
+        },
       }}
     >
       <DataGrid
@@ -516,7 +536,7 @@ function ItemTabel({ setSelectedRows, setUpdateRowData, selectedRows }) {
         disableSelectionOnClick
         onSelectionModelChange={onSelectionChanged}
       />
-    </div>
+    </Box>
   );
 }
 

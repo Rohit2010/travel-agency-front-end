@@ -297,6 +297,9 @@ export default function OrderForm(props) {
   } else {
     values.cost = "";
   }
+  if (values.QNT && costValueForProduct) {
+    values.total = values.QNT * costValueForProduct;
+  }
   if (pcsinboxForProduct) {
     if (values.QNT) {
       values.Totalboxes = values.QNT / pcsinboxForProduct;

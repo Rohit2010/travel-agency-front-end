@@ -70,7 +70,8 @@ export default function Bkno(props) {
             draggable: true,
             progress: undefined,
           });
-          window.location.reload();
+          props.setBknoPopup(false);
+          // window.location.reload();
         }
       });
     }

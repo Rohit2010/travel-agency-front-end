@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { DataGrid } from "@material-ui/data-grid";
 import axios from "axios";
 import { REQUESTURL } from "../Constants";
+import Box from "@mui/material/Box";
 
 // const columns = [
 //   { field: "id", headerName: "ID", width: 95 },
@@ -195,84 +196,104 @@ import { REQUESTURL } from "../Constants";
 //   },
 // ];
 const columns = [
-  { field: "id", headerName: "ID", width: 95 },
+  {
+    field: "id",
+    headerName: "ID",
+    width: 95,
+    headerClassName: "super-app-theme--header",
+  },
   {
     field: "ordername",
     headerName: "Order Name",
-    width: 160,
+    width: 190,
     editable: true,
+    headerClassName: "super-app-theme--header",
   },
   {
     field: "ProductName",
     headerName: "Product Name",
-    width: 168,
+    width: 198,
     editable: true,
+    headerClassName: "super-app-theme--header",
   },
   {
     field: "customer",
     headerName: "customer",
-    width: 160,
+    width: 190,
     editable: true,
+    headerClassName: "super-app-theme--header",
   },
   {
     field: "state",
     headerName: "state",
-    width: 160,
+    width: 190,
+    headerClassName: "super-app-theme--header",
   },
   {
     field: "QNT",
     headerName: "QNT",
-    width: 138,
+    width: 168,
+    headerClassName: "super-app-theme--header",
   },
   {
     field: "cost",
     headerName: "Cost",
-    width: 138,
+    width: 168,
+    headerClassName: "super-app-theme--header",
   },
   {
     field: "total",
     headerName: "total",
-    width: 138,
+    width: 168,
+    headerClassName: "super-app-theme--header",
   },
   {
     field: "partno",
     headerName: "Part no",
-    width: 138,
+    width: 168,
+    headerClassName: "super-app-theme--header",
   },
   {
     field: "totalsize",
     headerName: "Total Size",
-    width: 145,
+    width: 175,
+    headerClassName: "super-app-theme--header",
   },
   {
     field: "TotalBoxes",
     headerName: "Total Boxes",
-    width: 155,
+    width: 185,
+    headerClassName: "super-app-theme--header",
   },
   {
     field: "BKNO",
     headerName: "BK NO",
-    width: 130,
+    width: 150,
+    headerClassName: "super-app-theme--header",
   },
   {
     field: "date",
     headerName: "date",
-    width: 145,
+    width: 175,
+    headerClassName: "super-app-theme--header",
   },
   {
     field: "availabilityDate",
     headerName: "availability Date",
-    width: 175,
+    width: 205,
+    headerClassName: "super-app-theme--header",
   },
   {
     field: "deliveryDate",
     headerName: "delivery Date",
-    width: 175,
+    width: 205,
+    headerClassName: "super-app-theme--header",
   },
   {
     field: "Notes",
     headerName: "Notes",
-    width: 155,
+    width: 185,
+    headerClassName: "super-app-theme--header",
   },
 ];
 
@@ -457,17 +478,19 @@ function OrderTabel() {
       for (const element of datatoprint) {
         element.id = element._id;
       }
-      console.log(datatoprint);
       setData(datatoprint);
     });
   }, []);
   return (
-    <div
-      style={{
+    <Box
+      sx={{
         height: "470px",
         width: "100%",
         display: "flex",
         justifyContent: "center",
+        "& .super-app-theme--header": {
+          fontWeight: "900!important",
+        },
       }}
     >
       <DataGrid
@@ -477,7 +500,7 @@ function OrderTabel() {
         checkboxSelection
         disableSelectionOnClick
       />
-    </div>
+    </Box>
   );
 }
 

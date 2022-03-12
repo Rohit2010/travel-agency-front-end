@@ -96,7 +96,8 @@ export default function Order(props) {
             draggable: true,
             progress: undefined,
           });
-          window.location.reload();
+          props.setOrderPopup(false);
+          // window.location.reload();
         }
       });
     }

@@ -70,7 +70,8 @@ export default function Customer(props) {
             draggable: true,
             progress: undefined,
           });
-          window.location.reload();
+          props.setCustomerPoppup(false);
+          // window.location.reload();
         }
       });
     }

@@ -200,6 +200,7 @@ function Report() {
   const [open3, setOpen3] = React.useState(false);
 
   const [open4, setOpen4] = React.useState(false);
+  const [inputValue, setInputValue] = React.useState("");
 
   const handleChange1 = (value) => {
     setOpenTable(true);
@@ -245,17 +246,27 @@ function Report() {
 
   const handleBrandNameChange = (e, value) => {
     setRowsData([]);
+    setInputValue("");
     setBrandAutoComplete(value);
     handleChange3(value);
     let temp = [];
     if (value === "All") {
-      temp = allOrdersData;
+      for (let i = 0; i < allItemsData.length; i++) {
+        let flagValue = allItemsData[i].productName;
+        for (let j = 0; j < allOrdersData.length; j++) {
+          if (allOrdersData[j].ProductName === flagValue) {
+            allOrdersData[j].brand = allItemsData[i].brand;
+            temp.push(allOrdersData[j]);
+          }
+        }
+      }
     } else {
       for (let i = 0; i < allItemsData.length; i++) {
         if (allItemsData[i].brand === value) {
           let flagValue = allItemsData[i].productName;
           for (let j = 0; j < allOrdersData.length; j++) {
             if (allOrdersData[j].ProductName === flagValue) {
+              allOrdersData[j].brand = value;
               temp.push(allOrdersData[j]);
             }
           }
@@ -263,9 +274,11 @@ function Report() {
       }
     }
     setRowsData(temp);
+    setInputValue("brand");
   };
   const handleOrderNameChange = (e, value) => {
     setRowsData([]);
+    setInputValue("");
     setOrderAutoComplete(value);
     handleChange1(value);
     let temp = [];
@@ -273,16 +286,17 @@ function Report() {
       temp = allOrdersData;
     } else {
       for (let i = 0; i < allOrdersData.length; i++) {
-        console.log(allOrdersData[i].ordername, "-", value);
         if (allOrdersData[i].ordername === value) {
           temp.push(allOrdersData[i]);
         }
       }
     }
     setRowsData(temp);
+    setInputValue("ordername");
   };
   const handleCustomerNameChange = (e, value) => {
     setRowsData([]);
+    setInputValue("");
     setCustomerAutoComplete(value);
     handleChange4(value);
     let temp = [];
@@ -297,9 +311,11 @@ function Report() {
     }
 
     setRowsData(temp);
+    setInputValue("customer");
   };
   const handleBknoChange = (e, value) => {
     setRowsData([]);
+    setInputValue("");
     setBknoAutoComplete(value);
     handleChange2(value);
     let temp = [];
@@ -313,21 +329,34 @@ function Report() {
       }
     }
     setRowsData(temp);
+    setInputValue("bkno");
   };
 
   const downloadPdf = () => {
     const doc = new jsPDF();
     doc.text("Order Report", 80, 10);
+
+    let colArray = [
+      { header: "ProductName", dataKey: "ProductName" },
+      { header: "QNT", dataKey: "QNT" },
+      { header: "cost", dataKey: "cost" },
+      { header: "total", dataKey: "total" },
+      { header: "state", dataKey: "state" },
+      { header: "totalsize", dataKey: "totalsize" },
+    ];
+    if (inputValue === "brand") {
+      colArray.push({ header: "Brand", dataKey: "brand" });
+    } else if (inputValue === "customer") {
+      colArray.push({ header: "Customer", dataKey: "customer" });
+    } else if (inputValue === "bkno") {
+      colArray.push({ header: "BKNO", dataKey: "BKNO" });
+    } else if (inputValue === "ordername") {
+      colArray.push({ header: "Order Name", dataKey: "ordername" });
+    }
+
     doc.autoTable({
       theme: "grid",
-      columns: [
-        { header: "ProductName", dataKey: "ProductName" },
-        { header: "QNT", dataKey: "QNT" },
-        { header: "cost", dataKey: "cost" },
-        { header: "total", dataKey: "total" },
-        { header: "state", dataKey: "state" },
-        { header: "totalsize", dataKey: "totalsize" },
-      ],
+      columns: colArray,
       body: rowsData,
     });
     doc.save("table.pdf");
@@ -570,6 +599,11 @@ function Report() {
                 <table aria-label="custom pagination table" id="table-to-xls">
                   <thead>
                     <tr>
+                      {inputValue === "brand" && <th>Brand</th>}
+                      {inputValue === "ordername" && <th>Order Name</th>}
+                      {inputValue === "customer" && <th>Customer</th>}
+                      {inputValue === "bkno" && <th>BKNO</th>}
+
                       <th>Product Name</th>
                       <th>QNT</th>
                       <th>Cost</th>
@@ -586,7 +620,28 @@ function Report() {
                         )
                       : rowsData
                     ).map((row) => (
-                      <tr key={row.ProductName}>
+                      <tr key={row._id}>
+                        {inputValue === "brand" && (
+                          <td style={{ width: 360 }} align="right">
+                            {row.brand}
+                          </td>
+                        )}
+                        {inputValue === "ordername" && (
+                          <td style={{ width: 360 }} align="right">
+                            {row.ordername}
+                          </td>
+                        )}
+                        {inputValue === "bkno" && (
+                          <td style={{ width: 360 }} align="right">
+                            {row.BKNO}
+                          </td>
+                        )}
+                        {inputValue === "customer" && (
+                          <td style={{ width: 360 }} align="right">
+                            {row.customer}
+                          </td>
+                        )}
+
                         <td style={{ width: 350 }}>{row.ProductName}</td>
                         <td style={{ width: 250 }} align="right">
                           {row.QNT}
