@@ -248,6 +248,9 @@ function Report() {
     setRowsData([]);
     setInputValue("");
     setBrandAutoComplete(value);
+    setCustomerAutoComplete("");
+    setBknoAutoComplete("");
+    setOrderAutoComplete("");
     handleChange3(value);
     let temp = [];
     if (value === "All") {
@@ -280,6 +283,10 @@ function Report() {
     setRowsData([]);
     setInputValue("");
     setOrderAutoComplete(value);
+    setBrandAutoComplete("");
+    setCustomerAutoComplete("");
+    setBknoAutoComplete("");
+
     handleChange1(value);
     let temp = [];
     if (value === "All") {
@@ -298,6 +305,10 @@ function Report() {
     setRowsData([]);
     setInputValue("");
     setCustomerAutoComplete(value);
+    setBrandAutoComplete("");
+    setBknoAutoComplete("");
+    setOrderAutoComplete("");
+
     handleChange4(value);
     let temp = [];
     if (value === "All") {
@@ -317,6 +328,10 @@ function Report() {
     setRowsData([]);
     setInputValue("");
     setBknoAutoComplete(value);
+    setBrandAutoComplete("");
+    setCustomerAutoComplete("");
+    setOrderAutoComplete("");
+
     handleChange2(value);
     let temp = [];
     if (value === "All") {
