@@ -34,27 +34,38 @@ function OrderPage() {
   };
 
   const submitExcelOrders = (e) => {
-    for (let i = 0; i < orderDataFromFile; i++) {}
-
     axios({
       method: "post",
       url: `${REQUESTURL}/api/OrderManipulate/postexcel`,
       data: {
         excelData: orderDataFromFile,
       },
-    }).then((response) => {
-      console.log(response);
-      toast.success("Item inserted", {
-        position: "bottom-center",
-        autoClose: 1000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
+    })
+      .then((response) => {
+        console.log(response);
+        toast.success("Item inserted", {
+          position: "bottom-center",
+          autoClose: 1000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        window.location.reload();
+      })
+      .catch((err) => {
+        toast.success("Not Inserted", {
+          position: "bottom-center",
+          autoClose: 1000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        window.location.reload();
       });
-      window.location.reload();
-    });
   };
 
   return (

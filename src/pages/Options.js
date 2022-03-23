@@ -423,7 +423,8 @@ function Options() {
               ref={brandRef}
               rows={brandData}
               columns={brandColumns}
-              pageSize={6}
+              pageSize={brandData.length}
+              autoPageSize={false}
               checkboxSelection
               disableSelectionOnClick
               onSelectionModelChange={onBrandSelectionChanges}
@@ -498,7 +499,8 @@ function Options() {
               ref={customerRef}
               rows={customerData}
               columns={customerColumns}
-              pageSize={6}
+              pageSize={customerData.length}
+              autoPageSize={false}
               checkboxSelection
               disableSelectionOnClick
               onSelectionModelChange={onCustomerSelectionChanges}
@@ -572,7 +574,8 @@ function Options() {
               ref={orderRef}
               rows={orderData}
               columns={orderColumns}
-              pageSize={6}
+              pageSize={orderData.length}
+              autoPageSize={false}
               checkboxSelection
               disableSelectionOnClick
               onSelectionModelChange={onOrderSelectionChanges}
@@ -646,7 +649,8 @@ function Options() {
               ref={bknoRef}
               rows={bknoData}
               columns={bknoColumns}
-              pageSize={6}
+              pageSize={bknoData.length}
+              autoPageSize={false}
               checkboxSelection
               disableSelectionOnClick
               onSelectionModelChange={onBknoSelectionChanges}
@@ -720,7 +724,8 @@ function Options() {
               ref={stateRef}
               rows={stateData}
               columns={stateColumns}
-              pageSize={6}
+              pageSize={stateData.length}
+              autoPageSize={false}
               checkboxSelection
               disableSelectionOnClick
               onSelectionModelChange={onStateSelectionChanges}

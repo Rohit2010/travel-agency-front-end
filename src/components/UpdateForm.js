@@ -25,11 +25,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function UpdateForm(props) {
+  console.log(props, "props");
   const initialFValues = {
     id: props.updateRowData.id,
     Brand: props.updateRowData.Brand,
     ProductName: props.updateRowData.ProductName,
-    Productdescription: props.updateRowData.Productdescription,
+    Productdescription: props.updateRowData.description,
     pcsinbox: props.updateRowData.pcsinbox,
     TradeName: props.updateRowData.TradeName,
     minimumorder: props.updateRowData.minimumOrder,

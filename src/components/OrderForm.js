@@ -256,8 +256,10 @@ export default function OrderForm(props) {
     if ("Notes" in fieldValues) temp.Notes = fieldValues.Notes;
     if ("partno" in fieldValues)
       temp.partno = fieldValues.partno ? "" : "This field is required.";
-    if ("Totalboxes" in fieldValues) temp.Totalboxes = fieldValues.Totalboxes;
-    if ("bkno" in fieldValues) temp.bkno = fieldValues.bkno;
+    if ("Totalboxes" in fieldValues)
+      temp.Totalboxes = fieldValues.Totalboxes ? "" : "This field is required.";
+    if ("bkno" in fieldValues)
+      temp.bkno = fieldValues.bkno ? "" : "This field is required.";
     setErrors({
       ...temp,
     });
@@ -272,7 +274,7 @@ export default function OrderForm(props) {
       fieldValues.cost &&
       fieldValues.partno &&
       fieldValues.Totalboxes &&
-      bknoAutoComplete &&
+      // bknoAutoComplete && //bkno filed change to not required
       customerNameAutoComplete &&
       selectedDate &&
       availabilityDate &&
@@ -360,7 +362,7 @@ export default function OrderForm(props) {
         }
       });
     } else
-      toast.error("Incorrect Field Inputs", {
+      toast.error("Incorrect Date Inputs / Some Fields are empty", {
         position: "bottom-center",
         autoClose: 1000,
         hideProgressBar: true,
