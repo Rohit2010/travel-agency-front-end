@@ -27,6 +27,32 @@ function OrderPage() {
 
   const [orderDataFromFile, setOrderDataFromFile] = useState([]);
 
+  const handleDeletedRows = () => {
+    if (selectedRows) {
+      axios({
+        method: "post",
+        url: `${REQUESTURL}/api/OrderManipulate/deleterows`,
+        data: {
+          rows: selectedRows,
+        },
+      }).then((response) => {
+        if (response.data.status === "ok") {
+          setSelectedRows([]);
+          toast.success("Item Deleted", {
+            position: "bottom-center",
+            autoClose: 1000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          window.location.reload();
+        }
+      });
+    }
+  };
+
   const onFileHandling = (e) => {
     const tempData = [];
     readXlsxFile(e.target.files[0]).then((rows) => {
@@ -113,6 +139,18 @@ function OrderPage() {
             style={{ width: "150px", marginRight: "20px" }}
           >
             Add order
+          </Button>
+          <Button
+            text="Delete Rows"
+            variant="outlined"
+            color="primary"
+            // startIcon={<AddIcon />}
+            onClick={() => {
+              handleDeletedRows();
+            }}
+            style={{ width: "150px" }}
+          >
+            Delete Rows
           </Button>
           <Button
             text="Update Row"

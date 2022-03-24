@@ -46,7 +46,6 @@ export default function OrderUpdateForm(props) {
     Totalboxes: props.updateRowData.TotalBoxes,
     Notes: props.updateRowData.Notes ? props.updateRowData.Notes : "",
   };
-  console.log(props.updateRowData, "initial values");
   const [productNameData, setProductNameData] = React.useState([]);
   const [orderNameData, setOrderNameData] = React.useState([]);
   const [customerNameData, setCustomerNameData] = React.useState([]);
