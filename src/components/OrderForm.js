@@ -743,6 +743,9 @@ export default function OrderForm(props) {
                 setOrderNameAutoComplete("");
                 setStateNameAutoComplete("");
                 setBknoAutoComplete("");
+                setSelectedDate(new Date());
+                setAvailabilityDate(new Date());
+                setDeliveryDate(new Date());
               }}
             />
           </div>

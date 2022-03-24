@@ -467,7 +467,7 @@ const rows = [
   },
 ];
 
-function OrderTabel() {
+function OrderTabel({ setSelectedRows, setUpdateRowData, selectedRows }) {
   const [data, setData] = React.useState([]);
   useEffect(() => {
     axios({
@@ -481,6 +481,19 @@ function OrderTabel() {
       setData(datatoprint);
     });
   }, []);
+  const onSelectionChanged = (rows) => {
+    setSelectedRows(rows);
+    if (rows.length === 1) {
+      if (data) {
+        for (let index = 0; index < data.length; index++) {
+          if (data[index].id === rows[0]) {
+            setUpdateRowData(data[index]);
+            break;
+          }
+        }
+      }
+    }
+  };
   return (
     <Box
       sx={{
@@ -499,6 +512,7 @@ function OrderTabel() {
         pageSize={6}
         checkboxSelection
         disableSelectionOnClick
+        onSelectionModelChange={onSelectionChanged}
       />
     </Box>
   );

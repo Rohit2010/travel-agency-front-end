@@ -16,10 +16,14 @@ import { toast, ToastContainer } from "react-toastify";
 import Bkno from "../components/formcontrols/Bkno";
 import State from "../components/formcontrols/State";
 import { REQUESTURL } from "../Constants";
+import OrderUpdateForm from "../components/OrderUpdateForm";
 
 function OrderPage() {
   const [openPopup, setOpenPopup] = useState(false);
   const [orderPopup, setOrderPopup] = useState(false);
+  const [updatePopup, setUpdatePopup] = useState(false);
+  const [updateRowData, setUpdateRowData] = React.useState([]);
+  const [selectedRows, setSelectedRows] = React.useState([]);
 
   const [orderDataFromFile, setOrderDataFromFile] = useState([]);
 
@@ -67,7 +71,11 @@ function OrderPage() {
         window.location.reload();
       });
   };
-
+  const handleUpdateRow = () => {
+    if (selectedRows.length == 1) {
+      setUpdatePopup(true);
+    }
+  };
   return (
     <>
       <Typography
@@ -106,6 +114,18 @@ function OrderPage() {
           >
             Add order
           </Button>
+          <Button
+            text="Update Row"
+            variant="outlined"
+            color="primary"
+            // startIcon={<AddIcon />}
+            onClick={() => {
+              handleUpdateRow();
+            }}
+            style={{ width: "150px" }}
+          >
+            Update Row
+          </Button>
 
           <Controls.Input
             variant="standard"
@@ -131,7 +151,11 @@ function OrderPage() {
         </Typography>
       </Typography>
       <Typography style={{ margin: "20px" }}>
-        <OrderTabel />
+        <OrderTabel
+          setSelectedRows={setSelectedRows}
+          setUpdateRowData={setUpdateRowData}
+          selectedRows={selectedRows}
+        />
       </Typography>
       <Popup
         title="Enter your Order Specfication"
@@ -140,7 +164,13 @@ function OrderPage() {
       >
         <OrderForm />
       </Popup>
-
+      <Popup
+        title="Enter your Item Specfication"
+        openPopup={updatePopup}
+        setOpenPopup={setUpdatePopup}
+      >
+        <OrderUpdateForm updateRowData={updateRowData} />
+      </Popup>
       <ToastContainer
         position="bottom-center"
         autoClose={1000}
