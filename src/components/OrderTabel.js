@@ -466,18 +466,34 @@ const rows = [
     Notes: "Dummy notes",
   },
 ];
+function convertToSimpleDate(val) {
+  const d = new Date(val);
+  const date = d.getFullYear() + "/" + d.getMonth() + "/" + d.getDate();
+  return date;
+}
 
 function OrderTabel({ setSelectedRows, setUpdateRowData, selectedRows }) {
   const [data, setData] = React.useState([]);
+  const [rowsToPrint, setRowsToPrint] = React.useState([]);
   useEffect(() => {
     axios({
       method: "get",
       url: `${REQUESTURL}/api/OrderManipulate/get`,
     }).then((response) => {
       let datatoprint = response.data;
+      let dummyData = response.data;
       for (const element of datatoprint) {
         element.id = element._id;
       }
+      for (const element of dummyData) {
+        element.id = element._id;
+        element.date = convertToSimpleDate(element.date);
+        element.availabilityDate = convertToSimpleDate(
+          element.availabilityDate
+        );
+        element.deliveryDate = convertToSimpleDate(element.deliveryDate);
+      }
+      setRowsToPrint(dummyData);
       setData(datatoprint);
     });
   }, []);
@@ -507,7 +523,7 @@ function OrderTabel({ setSelectedRows, setUpdateRowData, selectedRows }) {
       }}
     >
       <DataGrid
-        rows={data}
+        rows={rowsToPrint}
         columns={columns}
         pageSize={6}
         checkboxSelection

@@ -93,6 +93,9 @@ const CustomTablePagination = styled(TablePaginationUnstyled)`
 `;
 
 function Report() {
+  const [total, setTotal] = useState(null);
+  const [totalSize, setTotalSize] = useState(null);
+
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
@@ -100,11 +103,13 @@ function Report() {
   const [allBrands, setAllBrands] = React.useState([]);
   const [allOrders, setAllOrders] = React.useState([]);
   const [allBkno, setAllBkno] = React.useState([]);
+  const [allStates, setAllStates] = React.useState([]);
 
   const [brandAutoComplete, setBrandAutoComplete] = React.useState("");
   const [orderAutoComplete, setOrderAutoComplete] = React.useState("");
   const [customerAutoComplete, setCustomerAutoComplete] = React.useState("");
   const [bknoAutoComplete, setBknoAutoComplete] = React.useState("");
+  const [stateAutoComplete, setStateAutoComplete] = React.useState("");
 
   const [allOrdersData, setAllOrdersData] = React.useState([]);
   const [allItemsData, setAllItemsData] = React.useState([]);
@@ -179,6 +184,19 @@ function Report() {
 
       setAllBkno(temp);
     });
+    axios({
+      method: "get",
+      url: `${REQUESTURL}/api/GetProductNames/getState`,
+    }).then((response) => {
+      const result = response.data;
+      let temp = [];
+      for (let index = 0; index < response.data.length; index++) {
+        temp.push(response.data[index].state);
+      }
+      temp.push("All");
+
+      setAllStates(temp);
+    });
   }, []);
 
   // Avoid a layout jump when reaching the last page with empty rows.
@@ -198,8 +216,9 @@ function Report() {
   const [open1, setOpen1] = React.useState(false);
   const [open2, setOpen2] = React.useState(false);
   const [open3, setOpen3] = React.useState(false);
-
   const [open4, setOpen4] = React.useState(false);
+  const [open5, setOpen5] = React.useState(false);
+
   const [inputValue, setInputValue] = React.useState("");
 
   const handleChange1 = (value) => {
@@ -212,6 +231,9 @@ function Report() {
     setOpenTable(true);
   };
   const handleChange4 = (value) => {
+    setOpenTable(true);
+  };
+  const handleChange5 = (value) => {
     setOpenTable(true);
   };
 
@@ -243,6 +265,13 @@ function Report() {
   const handleOpen4 = () => {
     setOpen4(true);
   };
+  const handleClose5 = () => {
+    setOpen5(false);
+  };
+
+  const handleOpen5 = () => {
+    setOpen5(true);
+  };
 
   const handleBrandNameChange = (e, value) => {
     setRowsData([]);
@@ -251,6 +280,11 @@ function Report() {
     setCustomerAutoComplete("");
     setBknoAutoComplete("");
     setOrderAutoComplete("");
+    setStateAutoComplete("");
+
+    let total = 0;
+    let totalsize = 0;
+
     handleChange3(value);
     let temp = [];
     if (value === "All") {
@@ -260,6 +294,8 @@ function Report() {
           if (allOrdersData[j].ProductName === flagValue) {
             allOrdersData[j].brand = allItemsData[i].brand;
             temp.push(allOrdersData[j]);
+            total = total + allOrdersData[j].total;
+            totalsize = totalsize + allOrdersData[j].totalsize;
           }
         }
       }
@@ -271,12 +307,25 @@ function Report() {
             if (allOrdersData[j].ProductName === flagValue) {
               allOrdersData[j].brand = value;
               temp.push(allOrdersData[j]);
+              total = total + allOrdersData[j].total;
+              totalsize = totalsize + allOrdersData[j].totalsize;
             }
           }
         }
       }
     }
+    let obj = {
+      ProductName: "Total",
+      QNT: "",
+      cost: "",
+      total: total,
+      state: "",
+      totalsize: totalsize,
+    };
+    temp.push(obj);
     setRowsData(temp);
+    setTotal(total);
+    setTotalSize(totalsize);
     setInputValue("brand");
   };
   const handleOrderNameChange = (e, value) => {
@@ -286,43 +335,194 @@ function Report() {
     setBrandAutoComplete("");
     setCustomerAutoComplete("");
     setBknoAutoComplete("");
+    setStateAutoComplete("");
+
+    let total = 0;
+    let totalsize = 0;
 
     handleChange1(value);
     let temp = [];
     if (value === "All") {
       temp = allOrdersData;
+      for (let j = 0; j < allOrdersData.length; j++) {
+        total = total + allOrdersData[j].total;
+        totalsize = totalsize + allOrdersData[j].totalsize;
+      }
     } else {
       for (let i = 0; i < allOrdersData.length; i++) {
         if (allOrdersData[i].ordername === value) {
           temp.push(allOrdersData[i]);
+          total = total + allOrdersData[i].total;
+          totalsize = totalsize + allOrdersData[i].totalsize;
         }
       }
     }
+    let obj = {
+      ProductName: "Total",
+      QNT: "",
+      cost: "",
+      total: total,
+      state: "",
+      totalsize: totalsize,
+    };
+    temp.push(obj);
     setRowsData(temp);
+    setTotal(total);
+    setTotalSize(totalsize);
     setInputValue("ordername");
   };
   const handleCustomerNameChange = (e, value) => {
-    setRowsData([]);
     setInputValue("");
     setCustomerAutoComplete(value);
-    setBrandAutoComplete("");
-    setBknoAutoComplete("");
-    setOrderAutoComplete("");
-
     handleChange4(value);
+    let total = 0;
+    let totalsize = 0;
+
     let temp = [];
-    if (value === "All") {
-      temp = allOrdersData;
-    } else {
-      for (let i = 0; i < allOrdersData.length; i++) {
-        if (allOrdersData[i].customer === value) {
-          temp.push(allOrdersData[i]);
+    let brandAutoComplete2 = brandAutoComplete.includes("All")
+      ? ""
+      : brandAutoComplete;
+
+    let orderAutoComplete2 = orderAutoComplete.includes("All")
+      ? ""
+      : orderAutoComplete;
+
+    let bknoAutoComplete2 = bknoAutoComplete.includes("All")
+      ? ""
+      : bknoAutoComplete;
+    let stateAutoComplete2 = stateAutoComplete.includes("All")
+      ? ""
+      : stateAutoComplete;
+
+    if (value === "All") value = "";
+
+    // brand logic
+    for (let i = 0; i < allItemsData.length; i++) {
+      if (allItemsData[i].brand.includes(brandAutoComplete2)) {
+        let flagValue = allItemsData[i].productName;
+        for (let j = 0; j < allOrdersData.length; j++) {
+          if (allOrdersData[j].ProductName.includes(flagValue)) {
+            temp.push(allOrdersData[j]);
+          }
         }
       }
     }
+    setAllOrdersData(temp);
+    temp = [];
+    // brand logic
+
+    for (let i = 0; i < allOrdersData.length; i++) {
+      if (
+        allOrdersData[i].ordername.includes(orderAutoComplete2) &&
+        allOrdersData[i].state.includes(stateAutoComplete2) &&
+        allOrdersData[i].customer.includes(value)
+      ) {
+        if (
+          allOrdersData[i].BKNO &&
+          allOrdersData[i].BKNO.includes(bknoAutoComplete2)
+        ) {
+          temp.push(allOrdersData[i]);
+          total = total + allOrdersData[i].total;
+          totalsize = totalsize + allOrdersData[i].totalsize;
+        } else if (!allOrdersData[i].BKNO) {
+          temp.push(allOrdersData[i]);
+          total = total + allOrdersData[i].total;
+          totalsize = totalsize + allOrdersData[i].totalsize;
+        }
+      }
+    }
+    let obj = {
+      ProductName: "Total",
+      QNT: "",
+      cost: "",
+      total: total,
+      state: "",
+      totalsize: totalsize,
+    };
+    temp.push(obj);
 
     setRowsData(temp);
+    setTotal(total);
+    setTotalSize(totalsize);
     setInputValue("customer");
+  };
+  const handleStateNameChange = (e, value) => {
+    setRowsData([]);
+    setInputValue("");
+    setStateAutoComplete(value);
+    handleChange5(value);
+    let total = 0;
+    let totalsize = 0;
+
+    let temp = [];
+    let brandAutoComplete2 = brandAutoComplete.includes("All")
+      ? ""
+      : brandAutoComplete;
+
+    let orderAutoComplete2 = orderAutoComplete.includes("All")
+      ? ""
+      : orderAutoComplete;
+
+    let bknoAutoComplete2 = bknoAutoComplete.includes("All")
+      ? ""
+      : bknoAutoComplete;
+
+    let customerAutoComplete2 = customerAutoComplete.includes("All")
+      ? ""
+      : customerAutoComplete;
+
+    if (value === "All") value = "";
+
+    // brand logic
+
+    for (let i = 0; i < allItemsData.length; i++) {
+      if (allItemsData[i].brand.includes(brandAutoComplete2)) {
+        let flagValue = allItemsData[i].productName;
+        for (let j = 0; j < allOrdersData.length; j++) {
+          if (allOrdersData[j].ProductName.includes(flagValue)) {
+            temp.push(allOrdersData[j]);
+          }
+        }
+      }
+    }
+    setAllOrdersData(temp);
+    temp = [];
+
+    // brand logic
+
+    for (let i = 0; i < allOrdersData.length; i++) {
+      if (
+        allOrdersData[i].ordername.includes(orderAutoComplete2) &&
+        allOrdersData[i].customer.includes(customerAutoComplete2) &&
+        allOrdersData[i].state.includes(value)
+      ) {
+        if (
+          allOrdersData[i].BKNO &&
+          allOrdersData[i].BKNO.includes(bknoAutoComplete2)
+        ) {
+          temp.push(allOrdersData[i]);
+          total = total + allOrdersData[i].total;
+          totalsize = totalsize + allOrdersData[i].totalsize;
+        } else if (!allOrdersData[i].BKNO) {
+          temp.push(allOrdersData[i]);
+          total = total + allOrdersData[i].total;
+          totalsize = totalsize + allOrdersData[i].totalsize;
+        }
+      }
+    }
+    let obj = {
+      ProductName: "Total",
+      QNT: "",
+      cost: "",
+      total: total,
+      state: "",
+      totalsize: totalsize,
+    };
+    temp.push(obj);
+    setRowsData(temp);
+    setTotal(total);
+    setTotalSize(totalsize);
+    setInputValue("state");
   };
   const handleBknoChange = (e, value) => {
     setRowsData([]);
@@ -331,19 +531,39 @@ function Report() {
     setBrandAutoComplete("");
     setCustomerAutoComplete("");
     setOrderAutoComplete("");
+    setStateAutoComplete("");
+    let total = 0;
+    let totalsize = 0;
 
     handleChange2(value);
     let temp = [];
     if (value === "All") {
       temp = allOrdersData;
+      for (let j = 0; j < allOrdersData.length; j++) {
+        total = total + allOrdersData[j].total;
+        totalsize = totalsize + allOrdersData[j].totalsize;
+      }
     } else {
       for (let i = 0; i < allOrdersData.length; i++) {
         if (allOrdersData[i].BKNO === value) {
           temp.push(allOrdersData[i]);
+          total = total + allOrdersData[i].total;
+          totalsize = totalsize + allOrdersData[i].totalsize;
         }
       }
     }
+    let obj = {
+      ProductName: "Total",
+      QNT: "",
+      cost: "",
+      total: total,
+      state: "",
+      totalsize: totalsize,
+    };
+    temp.push(obj);
     setRowsData(temp);
+    setTotal(total);
+    setTotalSize(totalsize);
     setInputValue("bkno");
   };
 
@@ -359,15 +579,15 @@ function Report() {
       { header: "state", dataKey: "state" },
       { header: "totalsize", dataKey: "totalsize" },
     ];
-    if (inputValue === "brand") {
-      colArray.push({ header: "Brand", dataKey: "brand" });
-    } else if (inputValue === "customer") {
-      colArray.push({ header: "Customer", dataKey: "customer" });
-    } else if (inputValue === "bkno") {
-      colArray.push({ header: "BKNO", dataKey: "BKNO" });
-    } else if (inputValue === "ordername") {
-      colArray.push({ header: "Order Name", dataKey: "ordername" });
-    }
+    // if (inputValue === "brand") {
+    //   colArray.push({ header: "Brand", dataKey: "brand" });
+    // } else if (inputValue === "customer") {
+    //   colArray.push({ header: "Customer", dataKey: "customer" });
+    // } else if (inputValue === "bkno") {
+    //   colArray.push({ header: "BKNO", dataKey: "BKNO" });
+    // } else if (inputValue === "ordername") {
+    //   colArray.push({ header: "Order Name", dataKey: "ordername" });
+    // }
 
     doc.autoTable({
       theme: "grid",
@@ -389,7 +609,6 @@ function Report() {
       >
         {/* Order name */}
         <Autocomplete
-          // disablePortal
           open={open1}
           onClose={handleClose1}
           onOpen={handleOpen1}
@@ -408,41 +627,12 @@ function Report() {
         />
         {/* Order name */}
 
-        {/* <FormControl sx={{ m: 1, minWidth: 190 }}>
-          <InputLabel id="demo-controlled-open-select-label">
-            Report by order no
-          </InputLabel>
-          <Select
-            style={{
-              borderRadius: "25px",
-              height: "54px",
-              color: "#505152",
-            }}
-            labelId="demo-controlled-open-select-label"
-            id="demo-controlled-open-select"
-            open={open1}
-            onClose={handleClose1}
-            onOpen={handleOpen1}
-            value={reportByOrderNo}
-            label="Report by order no"
-            onChange={handleChange1}
-          >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            <MenuItem value={10}>All order</MenuItem>
-            <MenuItem value={20}>All customer</MenuItem>
-            <MenuItem value={30}>All state</MenuItem>
-          </Select>
-        </FormControl> */}
-
         {/* bkno */}
         <Autocomplete
-          // disablePortal
           open={open2}
           onClose={handleClose2}
           onOpen={handleOpen2}
-          name="Reports By Bkno"
+          name="Bkno"
           options={allBkno}
           onChange={handleBknoChange}
           value={bknoAutoComplete}
@@ -453,37 +643,8 @@ function Report() {
         />
         {/* bkno */}
 
-        {/* <FormControl sx={{ m: 1, minWidth: 190 }}>
-          <InputLabel id="demo-controlled-open-select-label">
-            Report by bk no
-          </InputLabel>
-          <Select
-            style={{
-              borderRadius: "25px",
-              height: "54px",
-              color: "#505152",
-            }}
-            labelId="demo-controlled-open-select-label"
-            id="demo-controlled-open-select"
-            open={open2}
-            onClose={handleClose2}
-            onOpen={handleOpen2}
-            value={reportByBKNo}
-            label="Report by bk no"
-            onChange={handleChange2}
-          >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            <MenuItem value={10}>All bk</MenuItem>
-            <MenuItem value={20}>All customer</MenuItem>
-            <MenuItem value={30}>All state</MenuItem>
-          </Select>
-        </FormControl> */}
-
         {/* Brands */}
         <Autocomplete
-          // disablePortal
           name="Brand"
           open={open3}
           onClose={handleClose3}
@@ -497,37 +658,15 @@ function Report() {
           )}
         />
         {/* Brands */}
-        {/* <FormControl sx={{ m: 1, minWidth: 190 }}>
-          <InputLabel id="demo-controlled-open-select-label">
-            Report by brand
-          </InputLabel>
-          <Select
-            style={{
-              borderRadius: "25px",
-              height: "54px",
-              color: "#505152",
-            }}
-            labelId="demo-controlled-open-select-label"
-            id="demo-controlled-open-select"
-            open={open3}
-            onClose={handleClose3}
-            onOpen={handleOpen3}
-            value={reportByBrand}
-            label="Report by brand"
-            onChange={handleChange3}
-          >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            <MenuItem value={10}>All brands</MenuItem>
-            <MenuItem value={20}>All customer</MenuItem>
-            <MenuItem value={30}>All state</MenuItem>
-          </Select>
-        </FormControl> */}
-
-        {/* Customer */}
+      </Typography>
+      <Typography
+        style={{
+          marginTop: "20px",
+          display: "flex",
+          justifyContent: "space-evenly",
+        }}
+      >
         <Autocomplete
-          // disablePortal
           open={open4}
           onClose={handleClose4}
           onOpen={handleOpen4}
@@ -544,52 +683,19 @@ function Report() {
             />
           )}
         />
-        {/* Customer */}
-
-        {/* <FormControl sx={{ m: 1, minWidth: 190 }}>
-          <InputLabel id="demo-controlled-open-select-label">
-            Report by Customer
-          </InputLabel>
-          <Select
-            style={{
-              borderRadius: "25px",
-              height: "54px",
-              color: "#505152",
-            }}
-            labelId="demo-controlled-open-select-label"
-            id="demo-controlled-open-select"
-            open={open4}
-            onClose={handleClose4}
-            onOpen={handleOpen4}
-            value={reportByCustomer}
-            label="Report by Customer"
-            onChange={(event) => {
-              setReportByCustomer(event.target.value);
-              setOpenTable(true);
-              console.log(event.target.value);
-              let dummy = [];
-
-              for (let i = 0; i < allData.length; i++) {
-                if (allData[i].customer === event.target.value) {
-                  dummy.push(allData[i]);
-                }
-              }
-              setRowsData(dummy);
-            }}
-          >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-
-            {allCustomers.map((val, index) => {
-              return (
-                <MenuItem key={index} value={val.customer}>
-                  {val.customer}
-                </MenuItem>
-              );
-            })}
-          </Select>
-        </FormControl> */}
+        <Autocomplete
+          open={open5}
+          onClose={handleClose5}
+          onOpen={handleOpen5}
+          name="State"
+          options={allStates}
+          onChange={handleStateNameChange}
+          value={stateAutoComplete}
+          sx={{ width: 215 }}
+          renderInput={(params) => (
+            <Controls.Input {...params} label="Reports By State" name="State" />
+          )}
+        />
       </Typography>
       <Typography
         style={{
@@ -614,10 +720,10 @@ function Report() {
                 <table aria-label="custom pagination table" id="table-to-xls">
                   <thead>
                     <tr>
-                      {inputValue === "brand" && <th>Brand</th>}
+                      {/* {inputValue === "brand" && <th>Brand</th>}
                       {inputValue === "ordername" && <th>Order Name</th>}
                       {inputValue === "customer" && <th>Customer</th>}
-                      {inputValue === "bkno" && <th>BKNO</th>}
+                      {inputValue === "bkno" && <th>BKNO</th>} */}
 
                       <th>Product Name</th>
                       <th>QNT</th>
@@ -636,7 +742,7 @@ function Report() {
                       : rowsData
                     ).map((row) => (
                       <tr key={row._id}>
-                        {inputValue === "brand" && (
+                        {/* {inputValue === "brand" && (
                           <td style={{ width: 360 }} align="right">
                             {row.brand}
                           </td>
@@ -655,7 +761,7 @@ function Report() {
                           <td style={{ width: 360 }} align="right">
                             {row.customer}
                           </td>
-                        )}
+                        )} */}
 
                         <td style={{ width: 350 }}>{row.ProductName}</td>
                         <td style={{ width: 250 }} align="right">
@@ -683,6 +789,26 @@ function Report() {
                     )}
                   </tbody>
                   <tfoot>
+                    {/* <tr>
+                      <td
+                        style={{
+                          width: 350,
+                          fontWeight: "bold",
+                          fontSize: "1.2rem",
+                        }}
+                      >
+                        Total
+                      </td>
+                      <td style={{ width: 250 }} align="right"></td>
+                      <td style={{ width: 160 }} align="right"></td>
+                      <td style={{ width: 160 }} align="right">
+                        {total}
+                      </td>
+                      <td style={{ width: 160 }} align="right"></td>
+                      <td style={{ width: 360 }} align="right">
+                        {totalSize}
+                      </td>
+                    </tr> */}
                     <tr>
                       <CustomTablePagination
                         rowsPerPageOptions={[
