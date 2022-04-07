@@ -314,15 +314,7 @@ function Report() {
         }
       }
     }
-    let obj = {
-      ProductName: "Total",
-      QNT: "",
-      cost: "",
-      total: total,
-      state: "",
-      totalsize: totalsize,
-    };
-    temp.push(obj);
+
     setRowsData(temp);
     setTotal(total);
     setTotalSize(totalsize);
@@ -357,15 +349,14 @@ function Report() {
         }
       }
     }
-    let obj = {
-      ProductName: "Total",
-      QNT: "",
-      cost: "",
-      total: total,
-      state: "",
-      totalsize: totalsize,
-    };
-    temp.push(obj);
+    // let obj = {
+    //   ProductName: "Total",
+    //   QNT: "",
+    //   cost: "",
+    //   total: total,
+    //   state: "",
+    //   totalsize: totalsize,
+    // };
     setRowsData(temp);
     setTotal(total);
     setTotalSize(totalsize);
@@ -373,6 +364,8 @@ function Report() {
   };
   const handleCustomerNameChange = (e, value) => {
     setInputValue("");
+    setRowsData([]);
+
     setCustomerAutoComplete(value);
     handleChange4(value);
     let total = 0;
@@ -397,37 +390,49 @@ function Report() {
     if (value === "All") value = "";
 
     // brand logic
-    for (let i = 0; i < allItemsData.length; i++) {
-      if (allItemsData[i].brand.includes(brandAutoComplete2)) {
-        let flagValue = allItemsData[i].productName;
-        for (let j = 0; j < allOrdersData.length; j++) {
-          if (allOrdersData[j].ProductName.includes(flagValue)) {
-            temp.push(allOrdersData[j]);
+    if (inputValue === "brand")
+      for (let i = 0; i < allItemsData.length; i++) {
+        if (allItemsData[i].brand.includes(brandAutoComplete2)) {
+          let flagValue = allItemsData[i].productName;
+          for (let j = 0; j < allOrdersData.length; j++) {
+            if (allOrdersData[j].ProductName.includes(flagValue)) {
+              temp.push(allOrdersData[j]);
+            }
           }
         }
       }
+    else {
+      temp = allOrdersData;
     }
-    setAllOrdersData(temp);
+
+    let filteredData = temp;
+
     temp = [];
     // brand logic
 
-    for (let i = 0; i < allOrdersData.length; i++) {
+    for (let i = 0; i < filteredData.length - 1; i++) {
       if (
-        allOrdersData[i].ordername.includes(orderAutoComplete2) &&
-        allOrdersData[i].state.includes(stateAutoComplete2) &&
-        allOrdersData[i].customer.includes(value)
+        filteredData[i].ordername.includes(orderAutoComplete2) &&
+        filteredData[i].state.includes(stateAutoComplete2) &&
+        filteredData[i].customer.includes(value)
       ) {
-        if (
-          allOrdersData[i].BKNO &&
-          allOrdersData[i].BKNO.includes(bknoAutoComplete2)
-        ) {
-          temp.push(allOrdersData[i]);
-          total = total + allOrdersData[i].total;
-          totalsize = totalsize + allOrdersData[i].totalsize;
-        } else if (!allOrdersData[i].BKNO) {
-          temp.push(allOrdersData[i]);
-          total = total + allOrdersData[i].total;
-          totalsize = totalsize + allOrdersData[i].totalsize;
+        if (inputValue === "bkno") {
+          if (
+            filteredData[i].BKNO &&
+            filteredData[i].BKNO.includes(bknoAutoComplete2)
+          ) {
+            temp.push(filteredData[i]);
+            total = total + filteredData[i].total;
+            totalsize = totalsize + filteredData[i].totalsize;
+          } else if (!filteredData[i].BKNO) {
+            temp.push(filteredData[i]);
+            total = total + filteredData[i].total;
+            totalsize = totalsize + filteredData[i].totalsize;
+          }
+        } else {
+          temp.push(filteredData[i]);
+          total = total + filteredData[i].total;
+          totalsize = totalsize + filteredData[i].totalsize;
         }
       }
     }
@@ -439,12 +444,10 @@ function Report() {
       state: "",
       totalsize: totalsize,
     };
-    temp.push(obj);
 
     setRowsData(temp);
     setTotal(total);
     setTotalSize(totalsize);
-    setInputValue("customer");
   };
   const handleStateNameChange = (e, value) => {
     setRowsData([]);
@@ -474,39 +477,52 @@ function Report() {
     if (value === "All") value = "";
 
     // brand logic
-
-    for (let i = 0; i < allItemsData.length; i++) {
-      if (allItemsData[i].brand.includes(brandAutoComplete2)) {
-        let flagValue = allItemsData[i].productName;
-        for (let j = 0; j < allOrdersData.length; j++) {
-          if (allOrdersData[j].ProductName.includes(flagValue)) {
-            temp.push(allOrdersData[j]);
+    if (inputValue === "brand")
+      for (let i = 0; i < allItemsData.length; i++) {
+        if (allItemsData[i].brand.includes(brandAutoComplete2)) {
+          let flagValue = allItemsData[i].productName;
+          for (let j = 0; j < allOrdersData.length; j++) {
+            if (allOrdersData[j].ProductName.includes(flagValue)) {
+              temp.push(allOrdersData[j]);
+            }
           }
         }
       }
+    else {
+      temp = allOrdersData;
     }
-    setAllOrdersData(temp);
+    let filteredData = temp;
+
     temp = [];
 
     // brand logic
 
-    for (let i = 0; i < allOrdersData.length; i++) {
+    for (let i = 0; i < filteredData.length - 1; i++) {
+      // console.log("--", filteredData[i].ordername, orderAutoComplete2);
+      // console.log(filteredData[i].customer, customerAutoComplete2);
+      // console.log(filteredData[i].state, value, "--");
       if (
-        allOrdersData[i].ordername.includes(orderAutoComplete2) &&
-        allOrdersData[i].customer.includes(customerAutoComplete2) &&
-        allOrdersData[i].state.includes(value)
+        filteredData[i].ordername.includes(orderAutoComplete2) &&
+        filteredData[i].customer.includes(customerAutoComplete2) &&
+        filteredData[i].state.includes(value)
       ) {
-        if (
-          allOrdersData[i].BKNO &&
-          allOrdersData[i].BKNO.includes(bknoAutoComplete2)
-        ) {
-          temp.push(allOrdersData[i]);
-          total = total + allOrdersData[i].total;
-          totalsize = totalsize + allOrdersData[i].totalsize;
-        } else if (!allOrdersData[i].BKNO) {
-          temp.push(allOrdersData[i]);
-          total = total + allOrdersData[i].total;
-          totalsize = totalsize + allOrdersData[i].totalsize;
+        if (inputValue === "bkno") {
+          if (
+            filteredData[i].BKNO &&
+            filteredData[i].BKNO.includes(bknoAutoComplete2)
+          ) {
+            temp.push(filteredData[i]);
+            total = total + filteredData[i].total;
+            totalsize = totalsize + filteredData[i].totalsize;
+          } else if (!filteredData[i].BKNO) {
+            temp.push(filteredData[i]);
+            total = total + filteredData[i].total;
+            totalsize = totalsize + filteredData[i].totalsize;
+          }
+        } else {
+          temp.push(filteredData[i]);
+          total = total + filteredData[i].total;
+          totalsize = totalsize + filteredData[i].totalsize;
         }
       }
     }
@@ -518,11 +534,9 @@ function Report() {
       state: "",
       totalsize: totalsize,
     };
-    temp.push(obj);
     setRowsData(temp);
     setTotal(total);
     setTotalSize(totalsize);
-    setInputValue("state");
   };
   const handleBknoChange = (e, value) => {
     setRowsData([]);
@@ -552,15 +566,7 @@ function Report() {
         }
       }
     }
-    let obj = {
-      ProductName: "Total",
-      QNT: "",
-      cost: "",
-      total: total,
-      state: "",
-      totalsize: totalsize,
-    };
-    temp.push(obj);
+
     setRowsData(temp);
     setTotal(total);
     setTotalSize(totalsize);
@@ -588,7 +594,17 @@ function Report() {
     // } else if (inputValue === "ordername") {
     //   colArray.push({ header: "Order Name", dataKey: "ordername" });
     // }
-
+    let obj = {
+      ProductName: "Total",
+      QNT: "",
+      cost: "",
+      total: total,
+      state: "",
+      totalsize: totalSize,
+    };
+    let temp = rowsData;
+    temp.push(obj);
+    setRowsData(temp);
     doc.autoTable({
       theme: "grid",
       columns: colArray,
@@ -789,26 +805,24 @@ function Report() {
                     )}
                   </tbody>
                   <tfoot>
-                    {/* <tr>
-                      <td
-                        style={{
-                          width: 350,
-                          fontWeight: "bold",
-                          fontSize: "1.2rem",
-                        }}
-                      >
-                        Total
-                      </td>
+                    <tr>
+                      <td style={{ width: 350, fontWeight: "bold" }}>Total</td>
                       <td style={{ width: 250 }} align="right"></td>
                       <td style={{ width: 160 }} align="right"></td>
-                      <td style={{ width: 160 }} align="right">
+                      <td
+                        style={{ width: 160, fontWeight: "bold" }}
+                        align="right"
+                      >
                         {total}
                       </td>
                       <td style={{ width: 160 }} align="right"></td>
-                      <td style={{ width: 360 }} align="right">
+                      <td
+                        style={{ width: 360, fontWeight: "bold" }}
+                        align="right"
+                      >
                         {totalSize}
                       </td>
-                    </tr> */}
+                    </tr>
                     <tr>
                       <CustomTablePagination
                         rowsPerPageOptions={[

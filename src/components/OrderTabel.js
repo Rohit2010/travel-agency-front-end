@@ -510,6 +510,10 @@ function OrderTabel({ setSelectedRows, setUpdateRowData, selectedRows }) {
       }
     }
   };
+  const onFilterChange = (e) => {
+    console.log(e, "filter event");
+  };
+
   return (
     <Box
       sx={{
@@ -529,6 +533,7 @@ function OrderTabel({ setSelectedRows, setUpdateRowData, selectedRows }) {
         checkboxSelection
         disableSelectionOnClick
         onSelectionModelChange={onSelectionChanged}
+        onFilterModelChange={onFilterChange}
       />
     </Box>
   );

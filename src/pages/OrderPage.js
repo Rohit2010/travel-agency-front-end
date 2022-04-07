@@ -59,6 +59,7 @@ function OrderPage() {
       for (let i = 1; i < rows.length; i++) {
         if (rows[i]) tempData.push(rows[i]);
       }
+      console.log(tempData);
       setOrderDataFromFile(tempData);
     });
   };
