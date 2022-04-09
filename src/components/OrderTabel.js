@@ -472,7 +472,12 @@ function convertToSimpleDate(val) {
   return date;
 }
 
-function OrderTabel({ setSelectedRows, setUpdateRowData, selectedRows }) {
+function OrderTabel({
+  setSelectedRows,
+  setUpdateRowData,
+  selectedRows,
+  setRowsData,
+}) {
   const [data, setData] = React.useState([]);
   const [rowsToPrint, setRowsToPrint] = React.useState([]);
   useEffect(() => {
@@ -494,6 +499,7 @@ function OrderTabel({ setSelectedRows, setUpdateRowData, selectedRows }) {
         element.deliveryDate = convertToSimpleDate(element.deliveryDate);
       }
       setRowsToPrint(dummyData);
+      setRowsData(datatoprint);
       setData(datatoprint);
     });
   }, []);

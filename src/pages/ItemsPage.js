@@ -12,6 +12,8 @@ import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import UpdateForm from "../components/UpdateForm";
 import { REQUESTURL } from "../Constants";
+import readXlsxFile from "read-excel-file";
+import Controls from "../components/controls/Controls";
 
 function ItemsPage() {
   const [openPopup, setOpenPopup] = useState(false);
@@ -19,6 +21,63 @@ function ItemsPage() {
   const [selectedRows, setSelectedRows] = React.useState([]);
   const [updateRowData, setUpdateRowData] = React.useState([]);
 
+  const [orderDataFromFile, setOrderDataFromFile] = useState([]);
+  const onFileHandling = (e) => {
+    const tempData = [];
+    readXlsxFile(e.target.files[0]).then((rows) => {
+      for (let i = 1; i < rows.length; i++) {
+        let obj = {
+          brand: rows[i][0],
+          productName: rows[i][1],
+          productDescription: rows[i][2],
+          tradeName: rows[i][3],
+          pcsInbox: rows[i][4],
+          minimumOrder: rows[i][5],
+          cost: rows[i][6],
+          long: rows[i][7],
+          width: rows[i][8],
+          height: rows[i][9],
+          boxSize: rows[i][10],
+        };
+
+        if (rows[i]) tempData.push(obj);
+      }
+      setOrderDataFromFile(tempData);
+    });
+  };
+  const submitExcelOrders = (e) => {
+    axios({
+      method: "post",
+      url: `${REQUESTURL}/api/ItemManipulate/postexcel`,
+      data: {
+        excelData: orderDataFromFile,
+      },
+    })
+      .then((response) => {
+        toast.success("Item inserted", {
+          position: "bottom-center",
+          autoClose: 1000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        window.location.reload();
+      })
+      .catch((err) => {
+        toast.error("Not Inserted", {
+          position: "bottom-center",
+          autoClose: 1000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        // window.location.reload();
+      });
+  };
   const handleDeletedRows = () => {
     if (selectedRows) {
       axios({
@@ -100,6 +159,27 @@ function ItemsPage() {
             style={{ width: "150px" }}
           >
             Update Row
+          </Button>
+          <Controls.Input
+            variant="standard"
+            type="file"
+            name="excel"
+            onChange={onFileHandling}
+            style={{
+              marginRight: "5px",
+              marginTop: "4px",
+            }}
+          />
+
+          <Button
+            text="Upload"
+            variant="outlined"
+            color="primary"
+            startIcon={<AddIcon />}
+            onClick={submitExcelOrders}
+            style={{ width: "150px" }}
+          >
+            Upload
           </Button>
           <Button
             text="Add New"

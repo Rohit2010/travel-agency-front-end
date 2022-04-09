@@ -272,305 +272,133 @@ function Report() {
   const handleOpen5 = () => {
     setOpen5(true);
   };
-
+  const handleFilters = (filterUrl, obj) => {
+    axios({
+      method: "post",
+      url: `${REQUESTURL}/api/ReportManipulate/${filterUrl}`,
+      data: {
+        ordername: obj.order,
+        customername: obj.customer,
+        state: obj.state,
+        bkno: obj.bkno,
+      },
+    }).then((response) => {
+      console.log(response.data);
+      setRowsData(response.data.result);
+      let total = 0;
+      let totalsize = 0;
+      for (let index = 0; index < response.data.result.length; index++) {
+        total = total + response.data.result[index].total;
+        totalsize = totalsize + response.data.result[index].totalsize;
+      }
+      setTotal(Math.round(total));
+      setTotalSize(totalsize);
+    });
+  };
+  const handleBrandFilter = (filterUrl, obj) => {
+    axios({
+      method: "post",
+      url: `${REQUESTURL}/api/ReportManipulate/${filterUrl}`,
+      data: {
+        brand: obj.brand,
+        customer: obj.customer,
+        state: obj.state,
+      },
+    }).then((response) => {
+      console.log(response.data);
+      setRowsData(response.data.result);
+      let total = 0;
+      let totalsize = 0;
+      for (let index = 0; index < response.data.result.length; index++) {
+        total = total + response.data.result[index].total;
+        totalsize = totalsize + response.data.result[index].totalsize;
+      }
+      setTotal(Math.round(total));
+      setTotalSize(totalsize);
+    });
+  };
   const handleBrandNameChange = (e, value) => {
-    setRowsData([]);
-    setInputValue("");
     setBrandAutoComplete(value);
     setCustomerAutoComplete("");
     setBknoAutoComplete("");
     setOrderAutoComplete("");
     setStateAutoComplete("");
-
-    let total = 0;
-    let totalsize = 0;
-
-    handleChange3(value);
-    let temp = [];
-    if (value === "All") {
-      for (let i = 0; i < allItemsData.length; i++) {
-        let flagValue = allItemsData[i].productName;
-        for (let j = 0; j < allOrdersData.length; j++) {
-          if (allOrdersData[j].ProductName === flagValue) {
-            allOrdersData[j].brand = allItemsData[i].brand;
-            temp.push(allOrdersData[j]);
-            total = total + allOrdersData[j].total;
-            totalsize = totalsize + allOrdersData[j].totalsize;
-          }
-        }
-      }
-    } else {
-      for (let i = 0; i < allItemsData.length; i++) {
-        if (allItemsData[i].brand === value) {
-          let flagValue = allItemsData[i].productName;
-          for (let j = 0; j < allOrdersData.length; j++) {
-            if (allOrdersData[j].ProductName === flagValue) {
-              allOrdersData[j].brand = value;
-              temp.push(allOrdersData[j]);
-              total = total + allOrdersData[j].total;
-              totalsize = totalsize + allOrdersData[j].totalsize;
-            }
-          }
-        }
-      }
-    }
-
-    setRowsData(temp);
-    setTotal(total);
-    setTotalSize(totalsize);
     setInputValue("brand");
+    handleChange3(value);
+
+    let obj = {
+      brand: value,
+      state: "",
+      customer: "",
+    };
+    handleBrandFilter("searchByBrand", obj);
   };
   const handleOrderNameChange = (e, value) => {
-    setRowsData([]);
-    setInputValue("");
     setOrderAutoComplete(value);
     setBrandAutoComplete("");
     setCustomerAutoComplete("");
     setBknoAutoComplete("");
     setStateAutoComplete("");
+    handleChange2(value);
 
-    let total = 0;
-    let totalsize = 0;
+    const obj = {
+      order: value,
+      bkno: "",
+      state: "",
+      customer: "",
+    };
 
-    handleChange1(value);
-    let temp = [];
-    if (value === "All") {
-      temp = allOrdersData;
-      for (let j = 0; j < allOrdersData.length; j++) {
-        total = total + allOrdersData[j].total;
-        totalsize = totalsize + allOrdersData[j].totalsize;
-      }
-    } else {
-      for (let i = 0; i < allOrdersData.length; i++) {
-        if (allOrdersData[i].ordername === value) {
-          temp.push(allOrdersData[i]);
-          total = total + allOrdersData[i].total;
-          totalsize = totalsize + allOrdersData[i].totalsize;
-        }
-      }
-    }
-    // let obj = {
-    //   ProductName: "Total",
-    //   QNT: "",
-    //   cost: "",
-    //   total: total,
-    //   state: "",
-    //   totalsize: totalsize,
-    // };
-    setRowsData(temp);
-    setTotal(total);
-    setTotalSize(totalsize);
+    handleFilters("searchByOrderandstate", obj);
     setInputValue("ordername");
   };
-  const handleCustomerNameChange = (e, value) => {
-    setInputValue("");
-    setRowsData([]);
+  const handleBknoChange = (e, value) => {
+    setBrandAutoComplete("");
+    setOrderAutoComplete("");
+    setBknoAutoComplete(value);
+    setCustomerAutoComplete("");
+    setStateAutoComplete("");
 
+    handleChange1(value);
+
+    const obj = {
+      order: "",
+      bkno: value,
+      state: "",
+      customer: "",
+    };
+
+    handleFilters("searchByOrderandstate", obj);
+    setInputValue("bkno");
+  };
+
+  const handleCustomerNameChange = (e, value) => {
     setCustomerAutoComplete(value);
     handleChange4(value);
-    let total = 0;
-    let totalsize = 0;
 
-    let temp = [];
-    let brandAutoComplete2 = brandAutoComplete.includes("All")
-      ? ""
-      : brandAutoComplete;
-
-    let orderAutoComplete2 = orderAutoComplete.includes("All")
-      ? ""
-      : orderAutoComplete;
-
-    let bknoAutoComplete2 = bknoAutoComplete.includes("All")
-      ? ""
-      : bknoAutoComplete;
-    let stateAutoComplete2 = stateAutoComplete.includes("All")
-      ? ""
-      : stateAutoComplete;
-
-    if (value === "All") value = "";
-
-    // brand logic
-    if (inputValue === "brand")
-      for (let i = 0; i < allItemsData.length; i++) {
-        if (allItemsData[i].brand.includes(brandAutoComplete2)) {
-          let flagValue = allItemsData[i].productName;
-          for (let j = 0; j < allOrdersData.length; j++) {
-            if (allOrdersData[j].ProductName.includes(flagValue)) {
-              temp.push(allOrdersData[j]);
-            }
-          }
-        }
-      }
-    else {
-      temp = allOrdersData;
-    }
-
-    let filteredData = temp;
-
-    temp = [];
-    // brand logic
-
-    for (let i = 0; i < filteredData.length - 1; i++) {
-      if (
-        filteredData[i].ordername.includes(orderAutoComplete2) &&
-        filteredData[i].state.includes(stateAutoComplete2) &&
-        filteredData[i].customer.includes(value)
-      ) {
-        if (inputValue === "bkno") {
-          if (
-            filteredData[i].BKNO &&
-            filteredData[i].BKNO.includes(bknoAutoComplete2)
-          ) {
-            temp.push(filteredData[i]);
-            total = total + filteredData[i].total;
-            totalsize = totalsize + filteredData[i].totalsize;
-          } else if (!filteredData[i].BKNO) {
-            temp.push(filteredData[i]);
-            total = total + filteredData[i].total;
-            totalsize = totalsize + filteredData[i].totalsize;
-          }
-        } else {
-          temp.push(filteredData[i]);
-          total = total + filteredData[i].total;
-          totalsize = totalsize + filteredData[i].totalsize;
-        }
-      }
-    }
-    let obj = {
-      ProductName: "Total",
-      QNT: "",
-      cost: "",
-      total: total,
-      state: "",
-      totalsize: totalsize,
+    const obj = {
+      order: orderAutoComplete,
+      bkno: bknoAutoComplete,
+      state: stateAutoComplete,
+      customer: value,
+      brand: brandAutoComplete,
     };
-
-    setRowsData(temp);
-    setTotal(total);
-    setTotalSize(totalsize);
+    if (inputValue === "brand") handleBrandFilter("searchByBrand", obj);
+    else handleFilters("searchByOrderandstate", obj);
   };
+
   const handleStateNameChange = (e, value) => {
-    setRowsData([]);
-    setInputValue("");
     setStateAutoComplete(value);
     handleChange5(value);
-    let total = 0;
-    let totalsize = 0;
 
-    let temp = [];
-    let brandAutoComplete2 = brandAutoComplete.includes("All")
-      ? ""
-      : brandAutoComplete;
-
-    let orderAutoComplete2 = orderAutoComplete.includes("All")
-      ? ""
-      : orderAutoComplete;
-
-    let bknoAutoComplete2 = bknoAutoComplete.includes("All")
-      ? ""
-      : bknoAutoComplete;
-
-    let customerAutoComplete2 = customerAutoComplete.includes("All")
-      ? ""
-      : customerAutoComplete;
-
-    if (value === "All") value = "";
-
-    // brand logic
-    if (inputValue === "brand")
-      for (let i = 0; i < allItemsData.length; i++) {
-        if (allItemsData[i].brand.includes(brandAutoComplete2)) {
-          let flagValue = allItemsData[i].productName;
-          for (let j = 0; j < allOrdersData.length; j++) {
-            if (allOrdersData[j].ProductName.includes(flagValue)) {
-              temp.push(allOrdersData[j]);
-            }
-          }
-        }
-      }
-    else {
-      temp = allOrdersData;
-    }
-    let filteredData = temp;
-
-    temp = [];
-
-    // brand logic
-
-    for (let i = 0; i < filteredData.length - 1; i++) {
-      // console.log("--", filteredData[i].ordername, orderAutoComplete2);
-      // console.log(filteredData[i].customer, customerAutoComplete2);
-      // console.log(filteredData[i].state, value, "--");
-      if (
-        filteredData[i].ordername.includes(orderAutoComplete2) &&
-        filteredData[i].customer.includes(customerAutoComplete2) &&
-        filteredData[i].state.includes(value)
-      ) {
-        if (inputValue === "bkno") {
-          if (
-            filteredData[i].BKNO &&
-            filteredData[i].BKNO.includes(bknoAutoComplete2)
-          ) {
-            temp.push(filteredData[i]);
-            total = total + filteredData[i].total;
-            totalsize = totalsize + filteredData[i].totalsize;
-          } else if (!filteredData[i].BKNO) {
-            temp.push(filteredData[i]);
-            total = total + filteredData[i].total;
-            totalsize = totalsize + filteredData[i].totalsize;
-          }
-        } else {
-          temp.push(filteredData[i]);
-          total = total + filteredData[i].total;
-          totalsize = totalsize + filteredData[i].totalsize;
-        }
-      }
-    }
-    let obj = {
-      ProductName: "Total",
-      QNT: "",
-      cost: "",
-      total: total,
-      state: "",
-      totalsize: totalsize,
+    const obj = {
+      order: orderAutoComplete,
+      bkno: bknoAutoComplete,
+      state: value,
+      customer: customerAutoComplete,
+      brand: brandAutoComplete,
     };
-    setRowsData(temp);
-    setTotal(total);
-    setTotalSize(totalsize);
-  };
-  const handleBknoChange = (e, value) => {
-    setRowsData([]);
-    setInputValue("");
-    setBknoAutoComplete(value);
-    setBrandAutoComplete("");
-    setCustomerAutoComplete("");
-    setOrderAutoComplete("");
-    setStateAutoComplete("");
-    let total = 0;
-    let totalsize = 0;
-
-    handleChange2(value);
-    let temp = [];
-    if (value === "All") {
-      temp = allOrdersData;
-      for (let j = 0; j < allOrdersData.length; j++) {
-        total = total + allOrdersData[j].total;
-        totalsize = totalsize + allOrdersData[j].totalsize;
-      }
-    } else {
-      for (let i = 0; i < allOrdersData.length; i++) {
-        if (allOrdersData[i].BKNO === value) {
-          temp.push(allOrdersData[i]);
-          total = total + allOrdersData[i].total;
-          totalsize = totalsize + allOrdersData[i].totalsize;
-        }
-      }
-    }
-
-    setRowsData(temp);
-    setTotal(total);
-    setTotalSize(totalsize);
-    setInputValue("bkno");
+    if (inputValue === "brand") handleBrandFilter("searchByBrand", obj);
+    else handleFilters("searchByOrderandstate", obj);
   };
 
   const downloadPdf = () => {
@@ -722,43 +550,45 @@ function Report() {
           marginRight: "5.124450951683748vw",
         }}
       >
-        <Typography>
-          {openTable ? (
-            // <ReportOfTable />
-            <div>
-              {" "}
-              <Root
-                sx={{
-                  maxWidth: "100%",
-                  width: 1000,
-                }}
-              >
-                <table aria-label="custom pagination table" id="table-to-xls">
-                  <thead>
-                    <tr>
-                      {/* {inputValue === "brand" && <th>Brand</th>}
+        {rowsData && (
+          <Typography>
+            {openTable ? (
+              // <ReportOfTable />
+              <div>
+                {" "}
+                <Root
+                  sx={{
+                    maxWidth: "100%",
+                    width: 1000,
+                  }}
+                >
+                  <table aria-label="custom pagination table" id="table-to-xls">
+                    <thead>
+                      <tr>
+                        {/* {inputValue === "brand" && <th>Brand</th>}
                       {inputValue === "ordername" && <th>Order Name</th>}
                       {inputValue === "customer" && <th>Customer</th>}
                       {inputValue === "bkno" && <th>BKNO</th>} */}
 
-                      <th>Product Name</th>
-                      <th>QNT</th>
-                      <th>Cost</th>
-                      <th>total</th>
-                      <th>state</th>
-                      <th>total size</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(rowsPerPage > 0
-                      ? rowsData.slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
-                        )
-                      : rowsData
-                    ).map((row) => (
-                      <tr key={row._id}>
-                        {/* {inputValue === "brand" && (
+                        <th>Product Name</th>
+                        <th>QNT</th>
+                        <th>Cost</th>
+                        <th>total</th>
+                        <th>state</th>
+                        <th>total size</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rowsData &&
+                        (rowsPerPage > 0
+                          ? rowsData.slice(
+                              page * rowsPerPage,
+                              page * rowsPerPage + rowsPerPage
+                            )
+                          : rowsData
+                        ).map((row) => (
+                          <tr key={row._id}>
+                            {/* {inputValue === "brand" && (
                           <td style={{ width: 360 }} align="right">
                             {row.brand}
                           </td>
@@ -779,85 +609,90 @@ function Report() {
                           </td>
                         )} */}
 
-                        <td style={{ width: 350 }}>{row.ProductName}</td>
-                        <td style={{ width: 250 }} align="right">
-                          {row.QNT}
-                        </td>
-                        <td style={{ width: 160 }} align="right">
-                          {row.cost}
-                        </td>
-                        <td style={{ width: 160 }} align="right">
-                          {row.total}
-                        </td>
-                        <td style={{ width: 160 }} align="right">
-                          {row.state}
-                        </td>
-                        <td style={{ width: 360 }} align="right">
-                          {row.totalsize}
-                        </td>
-                      </tr>
-                    ))}
+                            <td style={{ width: 350 }}>{row.ProductName}</td>
+                            <td style={{ width: 250 }} align="right">
+                              {row.QNT}
+                            </td>
+                            <td style={{ width: 160 }} align="right">
+                              {row.cost}
+                            </td>
+                            <td style={{ width: 160 }} align="right">
+                              {row.total}
+                            </td>
+                            <td style={{ width: 160 }} align="right">
+                              {row.state}
+                            </td>
+                            <td style={{ width: 360 }} align="right">
+                              {row.totalsize}
+                            </td>
+                          </tr>
+                        ))}
 
-                    {emptyRows > 0 && (
-                      <tr style={{ height: 41 * emptyRows }}>
-                        <td colSpan={3} />
+                      {emptyRows > 0 && (
+                        <tr style={{ height: 41 * emptyRows }}>
+                          <td colSpan={3} />
+                        </tr>
+                      )}
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td style={{ width: 350, fontWeight: "bold" }}>
+                          Total
+                        </td>
+                        <td style={{ width: 250 }} align="right"></td>
+                        <td style={{ width: 160 }} align="right"></td>
+                        <td
+                          style={{ width: 160, fontWeight: "bold" }}
+                          align="right"
+                        >
+                          {total}
+                        </td>
+                        <td style={{ width: 160 }} align="right"></td>
+                        <td
+                          style={{ width: 360, fontWeight: "bold" }}
+                          align="right"
+                        >
+                          {totalSize}
+                        </td>
                       </tr>
-                    )}
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <td style={{ width: 350, fontWeight: "bold" }}>Total</td>
-                      <td style={{ width: 250 }} align="right"></td>
-                      <td style={{ width: 160 }} align="right"></td>
-                      <td
-                        style={{ width: 160, fontWeight: "bold" }}
-                        align="right"
-                      >
-                        {total}
-                      </td>
-                      <td style={{ width: 160 }} align="right"></td>
-                      <td
-                        style={{ width: 360, fontWeight: "bold" }}
-                        align="right"
-                      >
-                        {totalSize}
-                      </td>
-                    </tr>
-                    <tr>
-                      <CustomTablePagination
-                        rowsPerPageOptions={[
-                          5,
-                          10,
-                          25,
-                          { label: "All", value: -1 },
-                        ]}
-                        colSpan={6}
-                        count={rowsData.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        componentsProps={{
-                          select: {
-                            "aria-label": "rows per page",
-                          },
-                          actions: {
-                            showFirstButton: true,
-                            showLastButton: true,
-                          },
-                        }}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                      />
-                    </tr>
-                  </tfoot>
-                </table>
-              </Root>
-            </div>
-          ) : (
-            <Typography style={{ fontFamily: "sans-serif", fontSize: "17px" }}>
-              Table report will goes here
-            </Typography>
-          )}
-        </Typography>
+                      <tr>
+                        <CustomTablePagination
+                          rowsPerPageOptions={[
+                            5,
+                            10,
+                            25,
+                            { label: "All", value: -1 },
+                          ]}
+                          colSpan={6}
+                          count={rowsData.length}
+                          rowsPerPage={rowsPerPage}
+                          page={page}
+                          componentsProps={{
+                            select: {
+                              "aria-label": "rows per page",
+                            },
+                            actions: {
+                              showFirstButton: true,
+                              showLastButton: true,
+                            },
+                          }}
+                          onPageChange={handleChangePage}
+                          onRowsPerPageChange={handleChangeRowsPerPage}
+                        />
+                      </tr>
+                    </tfoot>
+                  </table>
+                </Root>
+              </div>
+            ) : (
+              <Typography
+                style={{ fontFamily: "sans-serif", fontSize: "17px" }}
+              >
+                Table report will goes here
+              </Typography>
+            )}
+          </Typography>
+        )}
       </Typography>
       <Typography
         style={{
