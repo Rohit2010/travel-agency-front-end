@@ -4,6 +4,7 @@ import { DataGrid } from "@material-ui/data-grid";
 import axios from "axios";
 import { REQUESTURL } from "../Constants";
 import Box from "@mui/material/Box";
+import Loader from "../components/Loader";
 
 // const columns = [
 //   { field: "id", headerName: "ID", width: 95 },
@@ -465,13 +466,19 @@ const rows = [
 ];
 
 function ItemTabel({ setSelectedRows, setUpdateRowData, selectedRows }) {
+  const [loader, setLoader] = React.useState(false);
+
   const gridRef = useRef();
   const [data, setData] = React.useState([]);
   useEffect(() => {
+    setLoader(true);
+
     axios({
       method: "get",
       url: `${REQUESTURL}/api/ItemManipulate/get`,
     }).then((response) => {
+      setLoader(false);
+
       let datatoprint = response.data;
       for (const element of datatoprint) {
         element.id = element._id;
@@ -516,27 +523,31 @@ function ItemTabel({ setSelectedRows, setUpdateRowData, selectedRows }) {
   };
 
   return (
-    <Box
-      sx={{
-        height: "470px",
-        width: "100%",
-        display: "flex",
-        justifyContent: "center",
-        "& .super-app-theme--header": {
-          fontWeight: "900!important",
-        },
-      }}
-    >
-      <DataGrid
-        ref={gridRef}
-        rows={data}
-        columns={columns}
-        pageSize={6}
-        checkboxSelection
-        disableSelectionOnClick
-        onSelectionModelChange={onSelectionChanged}
-      />
-    </Box>
+    <>
+      {loader && <Loader />}
+
+      <Box
+        sx={{
+          height: "470px",
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          "& .super-app-theme--header": {
+            fontWeight: "900!important",
+          },
+        }}
+      >
+        <DataGrid
+          ref={gridRef}
+          rows={data}
+          columns={columns}
+          pageSize={6}
+          checkboxSelection
+          disableSelectionOnClick
+          onSelectionModelChange={onSelectionChanged}
+        />
+      </Box>
+    </>
   );
 }
 

@@ -4,6 +4,7 @@ import { DataGrid } from "@material-ui/data-grid";
 import axios from "axios";
 import { REQUESTURL } from "../Constants";
 import Box from "@mui/material/Box";
+import Loader from "../components/Loader";
 
 // const columns = [
 //   { field: "id", headerName: "ID", width: 95 },
@@ -478,13 +479,17 @@ function OrderTabel({
   selectedRows,
   setRowsData,
 }) {
+  const [loader, setLoader] = React.useState(false);
   const [data, setData] = React.useState([]);
   const [rowsToPrint, setRowsToPrint] = React.useState([]);
   useEffect(() => {
+    setLoader(true);
     axios({
       method: "get",
       url: `${REQUESTURL}/api/OrderManipulate/get`,
     }).then((response) => {
+      setLoader(false);
+
       let datatoprint = response.data;
       let dummyData = response.data;
       for (const element of datatoprint) {
@@ -521,27 +526,31 @@ function OrderTabel({
   };
 
   return (
-    <Box
-      sx={{
-        height: "470px",
-        width: "100%",
-        display: "flex",
-        justifyContent: "center",
-        "& .super-app-theme--header": {
-          fontWeight: "900!important",
-        },
-      }}
-    >
-      <DataGrid
-        rows={rowsToPrint}
-        columns={columns}
-        pageSize={6}
-        checkboxSelection
-        disableSelectionOnClick
-        onSelectionModelChange={onSelectionChanged}
-        onFilterModelChange={onFilterChange}
-      />
-    </Box>
+    <>
+      {loader && <Loader />}
+
+      <Box
+        sx={{
+          height: "470px",
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          "& .super-app-theme--header": {
+            fontWeight: "900!important",
+          },
+        }}
+      >
+        <DataGrid
+          rows={rowsToPrint}
+          columns={columns}
+          pageSize={6}
+          checkboxSelection
+          disableSelectionOnClick
+          onSelectionModelChange={onSelectionChanged}
+          onFilterModelChange={onFilterChange}
+        />
+      </Box>
+    </>
   );
 }
 

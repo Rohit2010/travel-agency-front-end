@@ -14,6 +14,7 @@ import UpdateForm from "../components/UpdateForm";
 import { REQUESTURL } from "../Constants";
 import readXlsxFile from "read-excel-file";
 import Controls from "../components/controls/Controls";
+import Loader from "../components/Loader";
 
 const validateObject = (obj) => {
   if (
@@ -41,6 +42,8 @@ const validateObject = (obj) => {
   return false;
 };
 function ItemsPage() {
+  const [loader, setLoader] = useState(false);
+
   const [openPopup, setOpenPopup] = useState(false);
   const [updatePopup, setUpdatePopup] = useState(false);
   const [selectedRows, setSelectedRows] = React.useState([]);
@@ -72,6 +75,7 @@ function ItemsPage() {
     });
   };
   const submitExcelOrders = (e) => {
+    setLoader(true)
     axios({
       method: "post",
       url: `${REQUESTURL}/api/ItemManipulate/postexcel`,
@@ -80,6 +84,7 @@ function ItemsPage() {
       },
     })
       .then((response) => {
+        setLoader(false)
         toast.success("Item inserted", {
           position: "bottom-center",
           autoClose: 1000,
@@ -106,6 +111,7 @@ function ItemsPage() {
       });
   };
   const handleDeletedRows = () => {
+    setLoader(true)
     if (selectedRows) {
       axios({
         method: "post",
@@ -114,6 +120,7 @@ function ItemsPage() {
           rows: selectedRows,
         },
       }).then((response) => {
+        setLoader(false)
         if (response.data.status === "ok") {
           setSelectedRows([]);
           toast.success("Item Deleted", {
@@ -137,6 +144,7 @@ function ItemsPage() {
   };
   return (
     <>
+      {loader && <Loader />}
       <Typography
         style={{
           marginTop: "110px",

@@ -22,11 +22,14 @@ import "jspdf-autotable";
 import ReactHTMLTableToExcel from "react-html-table-to-excel";
 import ReactExport from "react-export-excel";
 import { toHaveFormValues } from "@testing-library/jest-dom/dist/matchers";
+import Loader from "../components/Loader";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function OrderPage() {
+  const [loader, setLoader] = useState(false);
+
   const [openPopup, setOpenPopup] = useState(false);
   const [orderPopup, setOrderPopup] = useState(false);
   const [updatePopup, setUpdatePopup] = useState(false);
@@ -38,6 +41,7 @@ function OrderPage() {
 
   const handleDeletedRows = () => {
     if (selectedRows) {
+      setLoader(true);
       axios({
         method: "post",
         url: `${REQUESTURL}/api/OrderManipulate/deleterows`,
@@ -45,6 +49,7 @@ function OrderPage() {
           rows: selectedRows,
         },
       }).then((response) => {
+        setLoader(false);
         if (response.data.status === "ok") {
           setSelectedRows([]);
           toast.success("Item Deleted", {
@@ -72,6 +77,7 @@ function OrderPage() {
     });
   };
   const submitExcelOrders = (e) => {
+    setLoader(true);
     axios({
       method: "post",
       url: `${REQUESTURL}/api/OrderManipulate/postexcel`,
@@ -80,6 +86,7 @@ function OrderPage() {
       },
     })
       .then((response) => {
+        setLoader(false);
         console.log(response);
         toast.success("Item inserted", {
           position: "bottom-center",
@@ -143,6 +150,7 @@ function OrderPage() {
   };
   return (
     <>
+      {loader && <Loader />}
       <Typography
         style={{
           marginTop: "110px",
