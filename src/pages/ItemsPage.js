@@ -15,6 +15,31 @@ import { REQUESTURL } from "../Constants";
 import readXlsxFile from "read-excel-file";
 import Controls from "../components/controls/Controls";
 
+const validateObject = (obj) => {
+  if (
+    obj.productName &&
+    obj.brand &&
+    obj.tradeName &&
+    // obj.pcsInbox &&
+    // obj.minimumOrder &&
+    // obj.cost &&
+    // obj.long &&
+    // obj.width &&
+    // obj.height &&
+    // obj.boxSize &&
+    !isNaN(obj.boxSize) &&
+    !isNaN(obj.height) &&
+    !isNaN(obj.width) &&
+    !isNaN(obj.long) &&
+    !isNaN(obj.cost) &&
+    !isNaN(obj.minimumOrder) &&
+    !isNaN(obj.pcsInbox)
+  ) {
+    return true;
+  }
+  console.log(obj, "rejected");
+  return false;
+};
 function ItemsPage() {
   const [openPopup, setOpenPopup] = useState(false);
   const [updatePopup, setUpdatePopup] = useState(false);
@@ -39,8 +64,9 @@ function ItemsPage() {
           height: rows[i][9],
           boxSize: rows[i][10],
         };
-
-        if (rows[i]) tempData.push(obj);
+        if (validateObject(obj)) {
+          if (rows[i]) tempData.push(obj);
+        }
       }
       setOrderDataFromFile(tempData);
     });
@@ -66,7 +92,7 @@ function ItemsPage() {
         window.location.reload();
       })
       .catch((err) => {
-        toast.error("Not Inserted", {
+        toast.error("Duplicate values/Server Error", {
           position: "bottom-center",
           autoClose: 1000,
           hideProgressBar: true,
@@ -75,6 +101,7 @@ function ItemsPage() {
           draggable: true,
           progress: undefined,
         });
+
         // window.location.reload();
       });
   };
