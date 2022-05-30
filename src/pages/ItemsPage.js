@@ -21,13 +21,13 @@ const validateObject = (obj) => {
     obj.productName &&
     obj.brand &&
     obj.tradeName &&
-    // obj.pcsInbox &&
-    // obj.minimumOrder &&
-    // obj.cost &&
-    // obj.long &&
-    // obj.width &&
-    // obj.height &&
-    // obj.boxSize &&
+    obj.pcsInbox !== null &&
+    obj.minimumOrder != null &&
+    obj.cost != null &&
+    obj.long != null &&
+    obj.width != null &&
+    obj.height != null &&
+    obj.boxSize != null &&
     !isNaN(obj.boxSize) &&
     !isNaN(obj.height) &&
     !isNaN(obj.width) &&
@@ -36,9 +36,10 @@ const validateObject = (obj) => {
     !isNaN(obj.minimumOrder) &&
     !isNaN(obj.pcsInbox)
   ) {
+    console.log(obj);
     return true;
   }
-  console.log(obj, "rejected");
+  // console.log(obj, "rejected");
   return false;
 };
 function ItemsPage() {
@@ -75,7 +76,7 @@ function ItemsPage() {
     });
   };
   const submitExcelOrders = (e) => {
-    setLoader(true)
+    setLoader(true);
     axios({
       method: "post",
       url: `${REQUESTURL}/api/ItemManipulate/postexcel`,
@@ -84,7 +85,7 @@ function ItemsPage() {
       },
     })
       .then((response) => {
-        setLoader(false)
+        setLoader(false);
         toast.success("Item inserted", {
           position: "bottom-center",
           autoClose: 1000,
@@ -111,7 +112,7 @@ function ItemsPage() {
       });
   };
   const handleDeletedRows = () => {
-    setLoader(true)
+    setLoader(true);
     if (selectedRows) {
       axios({
         method: "post",
@@ -120,7 +121,7 @@ function ItemsPage() {
           rows: selectedRows,
         },
       }).then((response) => {
-        setLoader(false)
+        setLoader(false);
         if (response.data.status === "ok") {
           setSelectedRows([]);
           toast.success("Item Deleted", {

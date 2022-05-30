@@ -409,23 +409,16 @@ function Report() {
       { header: "ProductName", dataKey: "ProductName" },
       { header: "QNT", dataKey: "QNT" },
       { header: "cost", dataKey: "cost" },
+      { header: "customer", dataKey: "customer" },
       { header: "total", dataKey: "total" },
       { header: "state", dataKey: "state" },
       { header: "totalsize", dataKey: "totalsize" },
     ];
-    // if (inputValue === "brand") {
-    //   colArray.push({ header: "Brand", dataKey: "brand" });
-    // } else if (inputValue === "customer") {
-    //   colArray.push({ header: "Customer", dataKey: "customer" });
-    // } else if (inputValue === "bkno") {
-    //   colArray.push({ header: "BKNO", dataKey: "BKNO" });
-    // } else if (inputValue === "ordername") {
-    //   colArray.push({ header: "Order Name", dataKey: "ordername" });
-    // }
     let obj = {
       ProductName: "Total",
       QNT: "",
       cost: "",
+      customer: "",
       total: total,
       state: "",
       totalsize: totalSize,
@@ -440,7 +433,6 @@ function Report() {
     });
     doc.save("table.pdf");
   };
-  const downloadXLSX = () => {};
 
   return (
     <>
@@ -565,14 +557,10 @@ function Report() {
                   <table aria-label="custom pagination table" id="table-to-xls">
                     <thead>
                       <tr>
-                        {/* {inputValue === "brand" && <th>Brand</th>}
-                      {inputValue === "ordername" && <th>Order Name</th>}
-                      {inputValue === "customer" && <th>Customer</th>}
-                      {inputValue === "bkno" && <th>BKNO</th>} */}
-
                         <th>Product Name</th>
                         <th>QNT</th>
                         <th>Cost</th>
+                        <th>Customer</th>
                         <th>total</th>
                         <th>state</th>
                         <th>total size</th>
@@ -588,33 +576,15 @@ function Report() {
                           : rowsData
                         ).map((row) => (
                           <tr key={row._id}>
-                            {/* {inputValue === "brand" && (
-                          <td style={{ width: 360 }} align="right">
-                            {row.brand}
-                          </td>
-                        )}
-                        {inputValue === "ordername" && (
-                          <td style={{ width: 360 }} align="right">
-                            {row.ordername}
-                          </td>
-                        )}
-                        {inputValue === "bkno" && (
-                          <td style={{ width: 360 }} align="right">
-                            {row.BKNO}
-                          </td>
-                        )}
-                        {inputValue === "customer" && (
-                          <td style={{ width: 360 }} align="right">
-                            {row.customer}
-                          </td>
-                        )} */}
-
                             <td style={{ width: 350 }}>{row.ProductName}</td>
                             <td style={{ width: 250 }} align="right">
                               {row.QNT}
                             </td>
                             <td style={{ width: 160 }} align="right">
                               {row.cost}
+                            </td>
+                            <td style={{ width: 160 }} align="right">
+                              {row.customer}
                             </td>
                             <td style={{ width: 160 }} align="right">
                               {row.total}
@@ -640,6 +610,7 @@ function Report() {
                           Total
                         </td>
                         <td style={{ width: 250 }} align="right"></td>
+                        <td style={{ width: 160 }} align="right"></td>
                         <td style={{ width: 160 }} align="right"></td>
                         <td
                           style={{ width: 160, fontWeight: "bold" }}
@@ -682,6 +653,75 @@ function Report() {
                       </tr>
                     </tfoot>
                   </table>
+
+                  {/* for exporting to excel */}
+                  <table
+                    aria-label="custom pagination table"
+                    id="table-to-xls1"
+                    style={{ display: "none" }}
+                  >
+                    <thead>
+                      <tr>
+                        <th>Product Name</th>
+                        <th>QNT</th>
+                        <th>Cost</th>
+                        <th>Customer</th>
+                        <th>total</th>
+                        <th>state</th>
+                        <th>total size</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rowsData &&
+                        rowsData.map((row) => (
+                          <tr key={row._id}>
+                            <td style={{ width: 100 }}>{row.ProductName}</td>
+                            <td style={{ width: 100 }} align="right">
+                              {row.QNT}
+                            </td>
+                            <td style={{ width: 100 }} align="right">
+                              {row.cost}
+                            </td>
+                            <td style={{ width: 100 }} align="right">
+                              {row.customer}
+                            </td>
+                            <td style={{ width: 100 }} align="right">
+                              {row.total}
+                            </td>
+                            <td style={{ width: 100 }} align="right">
+                              {row.state}
+                            </td>
+                            <td style={{ width: 100 }} align="right">
+                              {row.totalsize}
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td style={{ width: 100, fontWeight: "bold" }}>
+                          Total
+                        </td>
+                        <td style={{ width: 100 }} align="right"></td>
+                        <td style={{ width: 100 }} align="right"></td>
+                        <td style={{ width: 100 }} align="right"></td>
+                        <td
+                          style={{ width: 100, fontWeight: "bold" }}
+                          align="right"
+                        >
+                          {total}
+                        </td>
+                        <td style={{ width: 100 }} align="right"></td>
+                        <td
+                          style={{ width: 100, fontWeight: "bold" }}
+                          align="right"
+                        >
+                          {totalSize}
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                  {/* for exporting to excel */}
                 </Root>
               </div>
             ) : (
@@ -773,7 +813,7 @@ function Report() {
           <ReactHTMLTableToExcel
             id="test-table-xls-button"
             className="download-table-xls-button btn btn-primary mb-3 rounded-pill h-70"
-            table="table-to-xls"
+            table="table-to-xls1"
             filename="tablexls"
             sheet="tablexls"
             buttonText="Export to excel"

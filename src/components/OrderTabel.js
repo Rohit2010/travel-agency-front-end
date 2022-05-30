@@ -469,7 +469,10 @@ const rows = [
 ];
 function convertToSimpleDate(val) {
   const d = new Date(val);
-  const date = d.getFullYear() + "/" + d.getMonth() + "/" + d.getDate();
+  let year = d.getFullYear();
+  let month = d.getMonth() + 1;
+  let datee = d.getDate();
+  const date = year + "/" + month + "/" + datee;
   return date;
 }
 
@@ -505,6 +508,7 @@ function OrderTabel({
       }
       setRowsToPrint(dummyData);
       setRowsData(datatoprint);
+
       setData(datatoprint);
     });
   }, []);

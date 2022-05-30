@@ -34,7 +34,10 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
   },
 }));
-
+function convertDateStringToObject(value) {
+  let array = value.split("/").join("-");
+  return new Date(array);
+}
 export default function OrderUpdateForm(props) {
   const initialFValues = {
     id: props.updateRowData.id,
@@ -114,7 +117,15 @@ export default function OrderUpdateForm(props) {
     });
   }
   useEffect(() => {
-    // settingCostToProduct(props.updateRowData.ProductName);
+    axios({
+      method: "get",
+      url: `${REQUESTURL}/api/OrderManipulate/getbyid`,
+      params: {
+        orderid: props.updateRowData.id,
+      },
+    }).then((response) => {
+      console.log(response.data);
+    });
     setCostValueForProduct(props.updateRowData.cost);
 
     axios({
@@ -278,8 +289,8 @@ export default function OrderUpdateForm(props) {
     if ("cost" in fieldValues)
       temp.cost = fieldValues.cost ? "" : "This field is required.";
     if ("Notes" in fieldValues) temp.Notes = fieldValues.Notes;
-    if ("partno" in fieldValues)
-      temp.partno = fieldValues.partno ? "" : "This field is required.";
+    // if ("partno" in fieldValues)
+    //   temp.partno = fieldValues.partno ? "" : "This field is required.";
     if ("Totalboxes" in fieldValues)
       temp.Totalboxes = fieldValues.Totalboxes ? "" : "This field is required.";
     if ("bkno" in fieldValues)
@@ -287,6 +298,25 @@ export default function OrderUpdateForm(props) {
     setErrors({
       ...temp,
     });
+
+    let date = {
+      selectedDate: "" || {},
+      availabilityDate: "" || {},
+      deliveryDate: "" || {},
+    };
+
+    if (typeof selectedDate === "string") {
+      setSelectedDate(convertDateStringToObject(selectedDate));
+      date.selectedDate = convertDateStringToObject(selectedDate);
+    }
+    if (typeof availabilityDate === "string") {
+      setAvailabilityDate(convertDateStringToObject(availabilityDate));
+      date.availabilityDate = convertDateStringToObject(availabilityDate);
+    }
+    if (typeof deliveryDate === "string") {
+      setDeliveryDate(convertDateStringToObject(deliveryDate));
+      date.deliveryDate = convertDateStringToObject(deliveryDate);
+    }
 
     if (
       productNameAutoComplete &&
@@ -296,19 +326,20 @@ export default function OrderUpdateForm(props) {
       orderNameAutoComplete &&
       stateNameAutoComplete &&
       fieldValues.cost &&
-      fieldValues.partno &&
+      // fieldValues.partno &&
       fieldValues.Totalboxes &&
       // bknoAutoComplete && //bkno filed change to not required
       customerNameAutoComplete &&
-      selectedDate &&
-      availabilityDate &&
-      deliveryDate
+      date.selectedDate
+      // date.availabilityDate &&
+      // date.deliveryDate
     ) {
-      if (availabilityDate >= selectedDate && deliveryDate >= selectedDate) {
-        return true;
+      if (
+        date.availabilityDate >= date.selectedDate &&
+        date.deliveryDate >= date.selectedDate
+      ) {
       }
-
-      return false;
+      return true;
       // if (fieldValues == values)
       //   return Object.values(temp).every((x) => x == "");
     }
@@ -674,7 +705,7 @@ export default function OrderUpdateForm(props) {
               label="state"
               error={errors.partno}
             >
-              <option aria-label="None" value="" />
+              <option aria-label="None" value={0} />
               <option value={1}>1</option>
               <option value={2}>2</option>
               <option value={3}>3</option>

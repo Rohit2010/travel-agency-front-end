@@ -27,6 +27,24 @@ import Loader from "../components/Loader";
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const columns = [
+  "Product Name",
+  "QNT",
+  "cost",
+  "total",
+  "customer",
+  "Current date",
+  "Order name",
+  "state",
+  "availability date",
+  "delivery date",
+  "part no",
+  "total size",
+  "BKNO",
+  "Total boxes",
+  "notes ",
+];
 function OrderPage() {
   const [loader, setLoader] = useState(false);
 
@@ -71,7 +89,10 @@ function OrderPage() {
     const tempData = [];
     readXlsxFile(e.target.files[0]).then((rows) => {
       for (let i = 1; i < rows.length; i++) {
-        if (rows[i]) tempData.push(rows[i]);
+        if (rows[i]) {
+          tempData.push(rows[i]);
+          console.log(rows[i], "single row data");
+        }
       }
       setOrderDataFromFile(tempData);
     });
@@ -147,6 +168,10 @@ function OrderPage() {
       body: rowsData,
     });
     doc.save("table.pdf");
+  };
+  const ExportFileToExcel = () => {
+    const multiDataSet = [{ columns: columns, data: rowsData }];
+    console.log(multiDataSet, "data set for xlsx");
   };
   return (
     <>
@@ -247,6 +272,7 @@ function OrderPage() {
                 height: "38px",
                 marginTop: "-15px",
                 marginRight: "40px",
+                marginBottom: "20px",
               }}
               variant="contained"
               color="primary"
@@ -254,7 +280,46 @@ function OrderPage() {
             >
               Export to PDF
             </Button>
-            <ReactHTMLTableToExcel
+
+            <ExcelFile
+              element={
+                <Button
+                  style={{
+                    textTransform: "none",
+                    borderRadius: "20px",
+                    height: "38px",
+                    marginTop: "-15px",
+                    marginBottom: "20px",
+                  }}
+                  variant="contained"
+                  color="primary"
+                  onClick={ExportFileToExcel}
+                >
+                  Export to Excel
+                </Button>
+              }
+            >
+              <ExcelSheet data={rowsData} name="OrdersData">
+                <ExcelColumn label={columns[0]} value="ProductName" />
+                <ExcelColumn label={columns[1]} value="QNT" />
+                <ExcelColumn label={columns[2]} value="cost" />
+                <ExcelColumn label={columns[3]} value="total" />
+                <ExcelColumn label={columns[4]} value="customer" />
+                <ExcelColumn label={columns[5]} value="date" />
+                <ExcelColumn label={columns[6]} value="ordername" />
+                <ExcelColumn label={columns[7]} value="state" />
+                <ExcelColumn label={columns[8]} value="availabilityDate" />
+                <ExcelColumn label={columns[9]} value="deliveryDate" />
+                <ExcelColumn label={columns[10]} value="partno" />
+                <ExcelColumn label={columns[11]} value="totalsize" />
+                <ExcelColumn label={columns[12]} value="BKNO" />
+                <ExcelColumn label={columns[13]} value="TotalBoxes" />
+                <ExcelColumn label={columns[14]} value="Notes" />
+              </ExcelSheet>
+            </ExcelFile>
+
+            {/* excel uploading before */}
+            {/* <ReactHTMLTableToExcel
               id="test-table-xls-button"
               className="download-table-xls-button btn btn-primary mb-3 rounded-pill h-70"
               table="table-to-xls"
@@ -346,7 +411,8 @@ function OrderPage() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table> */}
+            {/* excel uploading before */}
           </Typography>
         </Typography>
       </Typography>

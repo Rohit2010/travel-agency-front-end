@@ -84,6 +84,8 @@ export default function OrderForm(props) {
   const [bknoAutoComplete, setBknoAutoComplete] = React.useState("");
   const [bknoCheck, setBknoCheck] = React.useState(true);
 
+  const [lock, setLock] = useState(false);
+
   function settingCostToProduct(value) {
     axios({
       method: "post",
@@ -254,8 +256,8 @@ export default function OrderForm(props) {
     if ("cost" in fieldValues)
       temp.cost = fieldValues.cost ? "" : "This field is required.";
     if ("Notes" in fieldValues) temp.Notes = fieldValues.Notes;
-    if ("partno" in fieldValues)
-      temp.partno = fieldValues.partno ? "" : "This field is required.";
+    // if ("partno" in fieldValues)
+    //   temp.partno = fieldValues.partno ? "" : "This field is required.";
     if ("Totalboxes" in fieldValues)
       temp.Totalboxes = fieldValues.Totalboxes ? "" : "This field is required.";
     if ("bkno" in fieldValues)
@@ -272,22 +274,22 @@ export default function OrderForm(props) {
       orderNameAutoComplete &&
       stateNameAutoComplete &&
       fieldValues.cost &&
-      fieldValues.partno &&
+      // fieldValues.partno &&
       fieldValues.Totalboxes &&
       // bknoAutoComplete && //bkno filed change to not required
       customerNameAutoComplete &&
-      selectedDate &&
-      availabilityDate &&
-      deliveryDate
+      selectedDate
+      // availabilityDate &&
+      // deliveryDate
     ) {
       if (availabilityDate >= selectedDate && deliveryDate >= selectedDate) {
-        return true;
       }
+      return true;
 
-      return false;
       // if (fieldValues == values)
       //   return Object.values(temp).every((x) => x == "");
     }
+
     return false;
   };
 
@@ -314,63 +316,70 @@ export default function OrderForm(props) {
   }
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (validate()) {
-      console.log("sending the data");
-      if (!values.Notes) values.Notes = "";
-      axios({
-        method: "post",
-        url: `${REQUESTURL}/api/OrderManipulate/post`,
-        data: {
-          productName: productNameAutoComplete,
-          QNT: values.QNT,
-          cost: values.cost,
-          total: values.total,
-          customer: customerNameAutoComplete,
-          Date: selectedDate,
-          orderName: orderNameAutoComplete,
-          state: stateNameAutoComplete,
-          availabilityDate: availabilityDate,
-          deliveryDate: deliveryDate,
-          partNo: values.partno,
-          totalSize: values.TotalSize,
-          BK_NO: bknoAutoComplete,
-          totalBoxes: values.Totalboxes,
-          notes: values.Notes,
-        },
-      }).then((response) => {
-        if (response.data.status === "not ok") {
-          toast.error(response.data.errmsg, {
-            position: "bottom-center",
-            autoClose: 1000,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-        } else {
-          toast.success("Item inserted", {
-            position: "bottom-center",
-            autoClose: 1000,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-          window.location.reload();
-        }
-      });
-    } else
-      toast.error("Incorrect Date Inputs / Some Fields are empty", {
-        position: "bottom-center",
-        autoClose: 1000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+    if (!lock) {
+      setLock(true);
+      if (validate()) {
+        console.log("sending the data");
+        if (!values.Notes) values.Notes = "";
+
+        axios({
+          method: "post",
+          url: `${REQUESTURL}/api/OrderManipulate/post`,
+          data: {
+            productName: productNameAutoComplete,
+            QNT: values.QNT,
+            cost: values.cost,
+            total: values.total,
+            customer: customerNameAutoComplete,
+            Date: selectedDate,
+            orderName: orderNameAutoComplete,
+            state: stateNameAutoComplete,
+            availabilityDate: availabilityDate,
+            deliveryDate: deliveryDate,
+            partNo: values.partno,
+            totalSize: values.TotalSize,
+            BK_NO: bknoAutoComplete,
+            totalBoxes: values.Totalboxes,
+            notes: values.Notes,
+          },
+        }).then((response) => {
+          setLock(false);
+          if (response.data.status === "not ok") {
+            toast.error(response.data.errmsg, {
+              position: "bottom-center",
+              autoClose: 1000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+          } else {
+            toast.success("Item inserted", {
+              position: "bottom-center",
+              autoClose: 1000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+            setValues(initialFValues);
+            window.location.reload();
+          }
+        });
+      } else
+        toast.error("Incorrect Date Inputs / Some Fields are empty", {
+          position: "bottom-center",
+          autoClose: 1000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+    } else {
+    }
   };
 
   return (
@@ -649,7 +658,7 @@ export default function OrderForm(props) {
               label="state"
               error={errors.partno}
             >
-              <option aria-label="None" value="" />
+              <option aria-label="None" value={0} />
               <option value={1}>1</option>
               <option value={2}>2</option>
               <option value={3}>3</option>
