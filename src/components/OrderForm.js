@@ -592,7 +592,6 @@ export default function OrderForm(props) {
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Grid container justifyContent="space-around">
               <KeyboardDatePicker
-                required="true"
                 style={{ marginRight: "68px" }}
                 margin="normal"
                 id="date-picker-dialog"
@@ -621,7 +620,6 @@ export default function OrderForm(props) {
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Grid container justifyContent="space-around">
               <KeyboardDatePicker
-                required="true"
                 style={{ marginRight: "68px" }}
                 margin="normal"
                 id="date-picker-dialog"
@@ -658,7 +656,7 @@ export default function OrderForm(props) {
               label="state"
               error={errors.partno}
             >
-              <option aria-label="None" value={0} />
+              <option aria-label="None" value={0} defaultChecked>0</option>
               <option value={1}>1</option>
               <option value={2}>2</option>
               <option value={3}>3</option>
