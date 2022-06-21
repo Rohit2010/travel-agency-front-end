@@ -238,14 +238,18 @@ export default function OrderUpdateForm(props) {
   };
 
   const [selectedDate, setSelectedDate] = React.useState(
-    props.updateRowData.date
+    props.updateRowData.date === "1970/1/1" ? null : props.updateRowData.date
   );
 
   const [availabilityDate, setAvailabilityDate] = React.useState(
-    props.updateRowData.availabilityDate
+    props.updateRowData.availabilityDate === "1970/1/1"
+      ? null
+      : props.updateRowData.availabilityDate
   );
   const [deliveryDate, setDeliveryDate] = React.useState(
-    props.updateRowData.deliveryDate
+    props.updateRowData.deliveryDate === "1970/1/1"
+      ? null
+      : props.updateRowData.deliveryDate
   );
   const [dateFlag, setDateFlag] = React.useState(false);
 

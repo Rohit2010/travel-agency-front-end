@@ -44,7 +44,7 @@ const initialFValues = {
   OrderName: "",
   state: "",
   cost: "",
-  partno: "",
+  partno: 0,
   TotalSize: "",
   Totalboxes: "",
   bkno: "",
@@ -211,9 +211,9 @@ export default function OrderForm(props) {
   };
 
   const [selectedDate, setSelectedDate] = React.useState(new Date());
+  const [availabilityDate, setAvailabilityDate] = React.useState(null);
+  const [deliveryDate, setDeliveryDate] = React.useState(null);
 
-  const [availabilityDate, setAvailabilityDate] = React.useState(new Date());
-  const [deliveryDate, setDeliveryDate] = React.useState(new Date());
   const [dateFlag, setDateFlag] = React.useState(false);
 
   const handleDateChange = (date) => {
@@ -317,8 +317,8 @@ export default function OrderForm(props) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!lock) {
-      setLock(true);
       if (validate()) {
+        setLock(true);
         console.log("sending the data");
         if (!values.Notes) values.Notes = "";
 
@@ -536,7 +536,7 @@ export default function OrderForm(props) {
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Grid container justifyContent="space-around">
               <KeyboardDatePicker
-                required="true"
+                // required="true"
                 style={{ marginRight: "68px" }}
                 margin="normal"
                 id="date-picker-dialog"
@@ -592,7 +592,7 @@ export default function OrderForm(props) {
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Grid container justifyContent="space-around">
               <KeyboardDatePicker
-                required="true"
+                // required="true"
                 style={{ marginRight: "68px" }}
                 margin="normal"
                 id="date-picker-dialog"
@@ -621,7 +621,7 @@ export default function OrderForm(props) {
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Grid container justifyContent="space-around">
               <KeyboardDatePicker
-                required="true"
+                // required="true"
                 style={{ marginRight: "68px" }}
                 margin="normal"
                 id="date-picker-dialog"
@@ -658,7 +658,7 @@ export default function OrderForm(props) {
               label="state"
               error={errors.partno}
             >
-              <option aria-label="None" value={0} />
+              <option aria-label="None" value={0} defaultValue={0} />
               <option value={1}>1</option>
               <option value={2}>2</option>
               <option value={3}>3</option>
