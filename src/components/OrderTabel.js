@@ -506,7 +506,18 @@ function OrderTabel({
         );
         element.deliveryDate = convertToSimpleDate(element.deliveryDate);
       }
-      setRowsToPrint(dummyData);
+      const dummyUpdatedData = dummyData.map((val, index) => {
+        if (val.availabilityDate === "1970/1/1") {
+          val.availabilityDate = null;
+        }
+
+        if (val.deliveryDate === "1970/1/1") {
+          val.deliveryDate = null;
+        }
+        return val;
+      });
+      setRowsToPrint(dummyUpdatedData);
+      // setRowsToPrint(dummyData);
       setRowsData(datatoprint);
 
       setData(datatoprint);

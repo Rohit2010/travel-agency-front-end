@@ -2,18 +2,22 @@ import React, { useState, useEffect } from "react";
 import { Grid } from "@material-ui/core";
 import Controls from "./controls/Controls";
 import { useForm, Form } from "./useForm";
-import FormHelperText from "@material-ui/core/FormHelperText";
-import NativeSelect from "@material-ui/core/NativeSelect";
 
+import FormHelperText from "@material-ui/core/FormHelperText";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 
+import NativeSelect from "@material-ui/core/NativeSelect";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+import Autocomplete from "@mui/material/Autocomplete";
+import TextField from "@mui/material/TextField";
 import { REQUESTURL } from "../Constants";
+
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
@@ -25,10 +29,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function UpdateForm(props) {
-  console.log(props, "props");
   const initialFValues = {
     id: props.updateRowData.id,
-    Brand: props.updateRowData.Brand,
     ProductName: props.updateRowData.ProductName,
     Productdescription: props.updateRowData.description,
     pcsinbox: props.updateRowData.pcsinbox,
@@ -43,13 +45,22 @@ export default function UpdateForm(props) {
   };
   const classes = useStyles();
   const [brandData, setBrandData] = React.useState([]);
+  const [onlyBrands, setOnlyBrands] = React.useState([]);
+  const [autoCompleteValue, setAutoCompleteValue] = React.useState(
+    props.updateRowData.brand
+  );
+  const [brandCheck, setBrandCheck] = React.useState(true);
   useEffect(() => {
     axios({
       method: "get",
       url: `${REQUESTURL}/api/AddBrand/get`,
     }).then((response) => {
-      console.log(response.data);
       setBrandData(response.data);
+      let temp = [];
+      for (let index = 0; index < response.data.length; index++) {
+        temp.push(response.data[index].Brand);
+      }
+      setOnlyBrands(temp);
     });
   }, []);
 
@@ -58,20 +69,26 @@ export default function UpdateForm(props) {
     name: "hai",
   });
 
-  const handleChange = (event) => {
-    const name = event.target.name;
-    setState({
-      ...state,
-      [name]: event.target.value,
-    });
+  const handleAutoCompleteChange = (event, value) => {
+    if (value) {
+      setBrandCheck(true);
+    } else {
+      setBrandCheck(false);
+    }
+    setAutoCompleteValue(value);
   };
 
   const { addOrEdit, recordForEdit } = props;
 
   const validate = (fieldValues = values) => {
     let temp = { ...errors };
-    if ("Brand" in fieldValues)
-      temp.Brand = fieldValues.Brand ? "" : "This field is required.";
+
+    // if ("Brand" in fieldValues)
+    //   temp.Brand = fieldValues.Brand ? "" : "This field is required.";
+
+    if (!autoCompleteValue) {
+      setBrandCheck(false);
+    }
     if ("ProductName" in fieldValues)
       temp.ProductName = fieldValues.ProductName
         ? ""
@@ -103,7 +120,7 @@ export default function UpdateForm(props) {
     });
 
     if (
-      fieldValues.Brand &&
+      autoCompleteValue &&
       fieldValues.ProductName &&
       fieldValues.pcsinbox &&
       fieldValues.TradeName &&
@@ -115,6 +132,7 @@ export default function UpdateForm(props) {
       fieldValues.boxsize
     ) {
       return true;
+
       // return Object.values(temp).every((x) => x == "");
     }
     return false;
@@ -132,18 +150,17 @@ export default function UpdateForm(props) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (validate()) {
-      // addOrEdit(values, resetForm);
       if (!values.Productdescription) {
         values.Productdescription = "";
       }
-      console.log(values);
       axios({
         method: "post",
         url: `${REQUESTURL}/api/ItemManipulate/update`,
         data: {
           id: values.id,
-          brand: values.Brand,
+          brand: autoCompleteValue,
           productName: values.ProductName,
           productDescription: values.Productdescription,
           tradeName: values.TradeName,
@@ -156,17 +173,28 @@ export default function UpdateForm(props) {
           boxSize: values.boxsize,
         },
       }).then((response) => {
-        console.log(response);
-        toast.success("Item inserted", {
-          position: "bottom-center",
-          autoClose: 1000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-        window.location.reload();
+        if (response.data.status === "not ok") {
+          toast.error(response.data.errmsg, {
+            position: "bottom-center",
+            autoClose: 1000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        } else {
+          toast.success("Item inserted", {
+            position: "bottom-center",
+            autoClose: 1000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          window.location.reload();
+        }
       });
     }
   };
@@ -175,7 +203,7 @@ export default function UpdateForm(props) {
     <Form style={{ marginLeft: "50px" }} onSubmit={handleSubmit}>
       <Grid container>
         <Grid item xs={6}>
-          <FormControl variant="outlined" className={classes.formControl}>
+          {/* <FormControl variant="outlined" className={classes.formControl}>
             <InputLabel htmlFor="outlined-age-native-simple">Brand</InputLabel>
             <Select
               native
@@ -196,9 +224,28 @@ export default function UpdateForm(props) {
               {/* <option value={"Zellbury"}>Zellbury</option>
               <option value={"Khaadi"}>Khaadi</option>
               <option value={"Generation"}>Generation</option>
-              <option value={"Limelight"}>Limelight</option> */}
+              <option value={"Limelight"}>Limelight</option> 
             </Select>
-          </FormControl>
+          </FormControl> */}
+          {/* autocomplete */}
+          <Autocomplete
+            // disablePortal
+            name="Brand"
+            options={onlyBrands}
+            onChange={handleAutoCompleteChange}
+            value={autoCompleteValue}
+            sx={{ width: 415 }}
+            renderInput={(params) => (
+              <Controls.Input
+                {...params}
+                label="Brand"
+                name="Brand"
+                error={brandCheck ? "" : "This field is required"}
+              />
+            )}
+          />
+
+          {/* autocomplete */}
 
           <Controls.Input
             // required
@@ -306,6 +353,8 @@ export default function UpdateForm(props) {
               color="default"
               onClick={() => {
                 resetForm();
+                setAutoCompleteValue(props.updateRowData.brand);
+                setBrandCheck(true);
               }}
             />
           </div>

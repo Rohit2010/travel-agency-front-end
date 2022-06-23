@@ -18,7 +18,6 @@ import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import { REQUESTURL } from "../Constants";
 
-
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
@@ -63,7 +62,6 @@ export default function ItemForm(props) {
       }
       setOnlyBrands(temp);
     });
-    setBrandCheck(false);
   }, []);
 
   const [state, setState] = React.useState({
@@ -73,9 +71,9 @@ export default function ItemForm(props) {
 
   const handleAutoCompleteChange = (event, value) => {
     if (value) {
-      setBrandCheck(false);
-    } else {
       setBrandCheck(true);
+    } else {
+      setBrandCheck(false);
     }
     setAutoCompleteValue(value);
   };
@@ -85,8 +83,12 @@ export default function ItemForm(props) {
   const validate = (fieldValues = values) => {
     let temp = { ...errors };
 
-    if ("Brand" in fieldValues)
-      temp.Brand = fieldValues.Brand ? "" : "This field is required.";
+    // if ("Brand" in fieldValues)
+    //   temp.Brand = fieldValues.Brand ? "" : "This field is required.";
+
+    if (!autoCompleteValue) {
+      setBrandCheck(false);
+    }
     if ("ProductName" in fieldValues)
       temp.ProductName = fieldValues.ProductName
         ? ""
@@ -237,7 +239,7 @@ export default function ItemForm(props) {
                 {...params}
                 label="Brand"
                 name="Brand"
-                error={brandCheck ? "This field is required" : ""}
+                error={brandCheck ? "" : "This field is required"}
               />
             )}
           />
@@ -351,6 +353,7 @@ export default function ItemForm(props) {
               onClick={() => {
                 resetForm();
                 setAutoCompleteValue("");
+                setBrandCheck(true);
               }}
             />
           </div>

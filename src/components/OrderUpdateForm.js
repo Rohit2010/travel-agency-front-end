@@ -34,10 +34,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
   },
 }));
-function convertDateStringToObject(value) {
-  let array = value.split("/").join("-");
-  return new Date(array);
-}
+
 export default function OrderUpdateForm(props) {
   const initialFValues = {
     id: props.updateRowData.id,
@@ -47,15 +44,18 @@ export default function OrderUpdateForm(props) {
     partno: props.updateRowData.partno,
     TotalSize: props.updateRowData.totalsize,
     Totalboxes: props.updateRowData.TotalBoxes,
-    Notes: props.updateRowData.Notes ? props.updateRowData.Notes : "",
+    Notes: props.updateRowData.Notes,
   };
+
   const [productNameData, setProductNameData] = React.useState([]);
   const [orderNameData, setOrderNameData] = React.useState([]);
   const [customerNameData, setCustomerNameData] = React.useState([]);
   const [bknoData, setBknoData] = React.useState([]);
   const [stateData, setStateData] = React.useState([]);
 
-  const [costValueForProduct, setCostValueForProduct] = React.useState();
+  const [costValueForProduct, setCostValueForProduct] = React.useState(
+    props.updateRowData.cost
+  );
   const [pcsinboxForProduct, setPcsinboxForProduct] = React.useState();
   const [boxSizeForProduct, setBoxSizeForProduct] = React.useState();
 
@@ -88,6 +88,8 @@ export default function OrderUpdateForm(props) {
   );
   const [bknoCheck, setBknoCheck] = React.useState(true);
 
+  const [lock, setLock] = useState(false);
+
   function settingCostToProduct(value) {
     axios({
       method: "post",
@@ -97,37 +99,12 @@ export default function OrderUpdateForm(props) {
       },
     }).then((response) => {
       // console.log(response.data);
-      if (response.data) {
-        if (response.data.cost) {
-          setCostValueForProduct(response.data.cost);
-          setPcsinboxForProduct(response.data.pcsInbox);
-          setBoxSizeForProduct(response.data.boxSize);
-        }
-      } else {
-        toast.error("Some Fields are not present in Items Table", {
-          position: "bottom-center",
-          autoClose: 1000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-      }
+      if (response.data.cost) setCostValueForProduct(response.data.cost);
+      setPcsinboxForProduct(response.data.pcsInbox);
+      setBoxSizeForProduct(response.data.boxSize);
     });
   }
   useEffect(() => {
-    axios({
-      method: "get",
-      url: `${REQUESTURL}/api/OrderManipulate/getbyid`,
-      params: {
-        orderid: props.updateRowData.id,
-      },
-    }).then((response) => {
-      console.log(response.data);
-    });
-    setCostValueForProduct(props.updateRowData.cost);
-
     axios({
       method: "get",
       url: `${REQUESTURL}/api/GetProductNames/get`,
@@ -188,69 +165,67 @@ export default function OrderUpdateForm(props) {
       }
       setOnlyStates(temp);
     });
-    setBknoCheck(false);
-    setStateNameCheck(false);
-    setOrderNameCheck(false);
-    setCustomerNameCheck(false);
-    setProductNameCheck(false);
+    // setBknoCheck(false);
+    // setStateNameCheck(false);
+    // setOrderNameCheck(false);
+    // setCustomerNameCheck(false);
+    // setProductNameCheck(false);
   }, []);
 
   const handleProductNameChange = (event, value) => {
     if (value) {
-      setProductNameCheck(false);
-      settingCostToProduct(value);
-    } else {
       setProductNameCheck(true);
+      settingCostToProduct(value);
+      setErrors({ ...errors, cost: "" });
+    } else {
+      setProductNameCheck(false);
+      setCostValueForProduct("");
     }
     setProductNameAutoComplete(value);
   };
   const handleCustomerNameChange = (event, value) => {
     if (value) {
-      setCustomerNameCheck(false);
-    } else {
       setCustomerNameCheck(true);
+    } else {
+      setCustomerNameCheck(false);
     }
     setCustomerNameAutoComplete(value);
   };
   const handleOrderNameChange = (event, value) => {
     if (value) {
-      setOrderNameCheck(false);
-    } else {
       setOrderNameCheck(true);
+    } else {
+      setOrderNameCheck(false);
     }
     setOrderNameAutoComplete(value);
   };
   const handleStateNameChange = (event, value) => {
     if (value) {
-      setStateNameCheck(false);
-    } else {
       setStateNameCheck(true);
+    } else {
+      setStateNameCheck(false);
     }
     setStateNameAutoComplete(value);
   };
   const handleBknoChange = (event, value) => {
-    if (value) {
-      setBknoCheck(false);
-    } else {
-      setBknoCheck(true);
-    }
+    // if (value) {
+    //   setBknoCheck(true);
+    // } else {
+    //   setBknoCheck(false);
+    // }
     setBknoAutoComplete(value);
   };
 
   const [selectedDate, setSelectedDate] = React.useState(
-    props.updateRowData.date === "1970/1/1" ? null : props.updateRowData.date
+    props.updateRowData.date
   );
-
   const [availabilityDate, setAvailabilityDate] = React.useState(
-    props.updateRowData.availabilityDate === "1970/1/1"
-      ? null
-      : props.updateRowData.availabilityDate
+    props.updateRowData.availabilityDate
   );
   const [deliveryDate, setDeliveryDate] = React.useState(
-    props.updateRowData.deliveryDate === "1970/1/1"
-      ? null
-      : props.updateRowData.deliveryDate
+    props.updateRowData.deliveryDate
   );
+
   const [dateFlag, setDateFlag] = React.useState(false);
 
   const handleDateChange = (date) => {
@@ -303,23 +278,8 @@ export default function OrderUpdateForm(props) {
       ...temp,
     });
 
-    let date = {
-      selectedDate: "" || {},
-      availabilityDate: "" || {},
-      deliveryDate: "" || {},
-    };
-
-    if (typeof selectedDate === "string") {
-      setSelectedDate(convertDateStringToObject(selectedDate));
-      date.selectedDate = convertDateStringToObject(selectedDate);
-    }
-    if (typeof availabilityDate === "string") {
-      setAvailabilityDate(convertDateStringToObject(availabilityDate));
-      date.availabilityDate = convertDateStringToObject(availabilityDate);
-    }
-    if (typeof deliveryDate === "string") {
-      setDeliveryDate(convertDateStringToObject(deliveryDate));
-      date.deliveryDate = convertDateStringToObject(deliveryDate);
+    if (!productNameAutoComplete) {
+      setProductNameCheck(false);
     }
 
     if (
@@ -334,19 +294,18 @@ export default function OrderUpdateForm(props) {
       fieldValues.Totalboxes &&
       // bknoAutoComplete && //bkno filed change to not required
       customerNameAutoComplete &&
-      date.selectedDate
-      // date.availabilityDate &&
-      // date.deliveryDate
+      selectedDate
+      // availabilityDate &&
+      // deliveryDate
     ) {
-      if (
-        date.availabilityDate >= date.selectedDate &&
-        date.deliveryDate >= date.selectedDate
-      ) {
+      if (availabilityDate >= selectedDate && deliveryDate >= selectedDate) {
       }
       return true;
+
       // if (fieldValues == values)
       //   return Object.values(temp).every((x) => x == "");
     }
+
     return false;
   };
 
@@ -373,64 +332,81 @@ export default function OrderUpdateForm(props) {
   }
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (validate()) {
-      console.log("sending the data");
-      if (!values.Notes) values.Notes = "";
-      axios({
-        method: "post",
-        url: `${REQUESTURL}/api/OrderManipulate/update`,
-        data: {
-          id: values.id,
-          productName: productNameAutoComplete,
-          QNT: values.QNT,
-          cost: values.cost,
-          total: values.total,
-          customer: customerNameAutoComplete,
-          Date: selectedDate,
-          orderName: orderNameAutoComplete,
-          state: stateNameAutoComplete,
-          availabilityDate: availabilityDate,
-          deliveryDate: deliveryDate,
-          partNo: values.partno,
-          totalSize: values.TotalSize,
-          BK_NO: bknoAutoComplete,
-          totalBoxes: values.Totalboxes,
-          notes: values.Notes,
-        },
-      }).then((response) => {
-        if (response.data.status === "not ok") {
-          toast.error(response.data.errmsg, {
-            position: "bottom-center",
-            autoClose: 1000,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-        } else {
-          toast.success("Item inserted", {
-            position: "bottom-center",
-            autoClose: 1000,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-          window.location.reload();
-        }
-      });
-    } else
-      toast.error("Incorrect Date Inputs / Some Fields are empty", {
-        position: "bottom-center",
-        autoClose: 1000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+    if (!lock) {
+      if (!customerNameAutoComplete) {
+        setCustomerNameCheck(false);
+      }
+      if (!orderNameAutoComplete) {
+        setOrderNameCheck(false);
+      }
+
+      if (!stateNameAutoComplete) {
+        setStateNameCheck(false);
+      }
+      if (validate()) {
+        setLock(true);
+        console.log("sending the data");
+        if (!values.Notes) values.Notes = "";
+
+        axios({
+          method: "post",
+          url: `${REQUESTURL}/api/OrderManipulate/update`,
+          data: {
+            id: values.id,
+            productName: productNameAutoComplete,
+            QNT: values.QNT,
+            cost: values.cost,
+            total: values.total,
+            customer: customerNameAutoComplete,
+            Date: selectedDate,
+            orderName: orderNameAutoComplete,
+            state: stateNameAutoComplete,
+            availabilityDate: availabilityDate,
+            deliveryDate: deliveryDate,
+            partNo: values.partno,
+            totalSize: values.TotalSize,
+            BK_NO: bknoAutoComplete,
+            totalBoxes: values.Totalboxes,
+            notes: values.Notes,
+          },
+        }).then((response) => {
+          setLock(false);
+          if (response.data.status === "not ok") {
+            toast.error(response.data.errmsg, {
+              position: "bottom-center",
+              autoClose: 1000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+          } else {
+            toast.success("Item inserted", {
+              position: "bottom-center",
+              autoClose: 1000,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+            setValues(initialFValues);
+            window.location.reload();
+          }
+        });
+      } else
+        toast.error("Incorrect Date Inputs / Some Fields are empty", {
+          position: "bottom-center",
+          autoClose: 1000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+    } else {
+    }
   };
 
   return (
@@ -449,42 +425,43 @@ export default function OrderUpdateForm(props) {
                 {...params}
                 label="Product Name"
                 name="Product Name"
-                error={productNameCheck ? "This field is required" : ""}
+                error={productNameCheck ? "" : "This field is required"}
               />
             )}
           />
-          {/* <FormControl variant="outlined" className={classes.formControl}>
-            <InputLabel htmlFor="outlined-age-native-simple">
-              Product Name
-            </InputLabel>
-            <Select
-              native
-              name="ProductName"
-              value={values.ProductName}
-              onChange={(e) => {
-                handleInputChange(e);
-                settingCostToProduct(e);
-              }}
-              label="Product Name"
-              error={errors.ProductName}
-            >
-              <option aria-label="None" value="" />
-              {productNameData.map((val, index) => {
-                return (
-                  <option value={val.productName} key={val._id}>
-                    {val.productName}
-                  </option>
-                );
-              })}
-            </Select>
-          </FormControl> */}
 
           <Controls.Input
             type="Number"
             label="QNT"
             name="QNT"
             value={values.QNT}
-            onChange={handleInputChange}
+            onChange={(e) => {
+              handleInputChange(e);
+              if (e.target.value && productNameAutoComplete) {
+                setErrors({
+                  ...errors,
+                  ["total"]: "",
+                  ["TotalSize"]: "",
+                  ["Totalboxes"]: "",
+                  ["QNT"]: "",
+                });
+              } else {
+                // setErrors({
+                //   ...errors,
+                //   total: "This field is required",
+                //   TotalSize: "This field is required",
+                //   Totalboxes: "This field is required",
+                //   QNT: "This field is required",
+                // });
+                setValues({
+                  ...values,
+                  total: "",
+                  TotalSize: "",
+                  Totalboxes: "",
+                  QNT: "",
+                });
+              }
+            }}
             error={errors.QNT}
           />
           <Controls.Input
@@ -508,33 +485,10 @@ export default function OrderUpdateForm(props) {
                 {...params}
                 label="Customer"
                 name="Customer"
-                error={customerNameCheck ? "This field is required" : ""}
+                error={!customerNameCheck ? "This field is required" : ""}
               />
             )}
           />
-
-          {/* <FormControl variant="outlined" className={classes.formControl}>
-            <InputLabel htmlFor="outlined-age-native-simple">
-              Customer
-            </InputLabel>
-            <Select
-              native
-              name="Customer"
-              value={values.Customer}
-              onChange={handleInputChange}
-              label="Customer"
-              error={errors.ProductName}
-            >
-              <option aria-label="None" value="" />
-              {customerNameData.map((val, index) => {
-                return (
-                  <option value={val.customer} key={val._id}>
-                    {val.customer}
-                  </option>
-                );
-              })}
-            </Select>
-          </FormControl> */}
 
           <Autocomplete
             // disablePortal
@@ -548,46 +502,15 @@ export default function OrderUpdateForm(props) {
                 {...params}
                 label="Order"
                 name="Order"
-                error={orderNameCheck ? "This field is required" : ""}
+                error={!orderNameCheck ? "This field is required" : ""}
               />
             )}
           />
 
-          {/* <FormControl variant="outlined" className={classes.formControl}>
-            <InputLabel htmlFor="outlined-age-native-simple">
-              Select Order Name
-            </InputLabel>
-            <Select
-              native
-              name="OrderName"
-              value={values.OrderName}
-              onChange={handleInputChange}
-              label="Order Name"
-              error={errors.OrderName}
-            >
-              <option aria-label="None" value="" />
-              {orderNameData.map((val, index) => {
-                return (
-                  <option value={val.order} key={val._id}>
-                    {val.order}
-                  </option>
-                );
-              })}
-            </Select>
-          </FormControl> */}
-
-          {/* <Controls.Input
-            label="Order Name"
-            name="OrderName"
-            value={values.OrderName}
-            onChange={handleInputChange}
-            error={errors.OrderName}
-          /> */}
-
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Grid container justifyContent="space-around">
               <KeyboardDatePicker
-                required="true"
+                // required="true"
                 style={{ marginRight: "68px" }}
                 margin="normal"
                 id="date-picker-dialog"
@@ -614,36 +537,15 @@ export default function OrderUpdateForm(props) {
                 {...params}
                 label="state"
                 name="state"
-                error={stateNameCheck ? "This field is required" : ""}
+                error={!stateNameCheck ? "This field is required" : ""}
               />
             )}
           />
 
-          {/* <FormControl variant="outlined" className={classes.formControl}>
-            <InputLabel htmlFor="outlined-age-native-simple">state</InputLabel>
-            <Select
-              native
-              name="state"
-              value={values.state}
-              onChange={handleInputChange}
-              label="state"
-              error={errors.state}
-            >
-              <option aria-label="None" value="" />
-              {stateData.map((val, index) => {
-                return (
-                  <option value={val.state} key={val._id}>
-                    {val.state}
-                  </option>
-                );
-              })}
-            </Select>
-          </FormControl> */}
-
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Grid container justifyContent="space-around">
               <KeyboardDatePicker
-                required="true"
+                // required="true"
                 style={{ marginRight: "68px" }}
                 margin="normal"
                 id="date-picker-dialog"
@@ -672,7 +574,7 @@ export default function OrderUpdateForm(props) {
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Grid container justifyContent="space-around">
               <KeyboardDatePicker
-                required="true"
+                // required="true"
                 style={{ marginRight: "68px" }}
                 margin="normal"
                 id="date-picker-dialog"
@@ -709,7 +611,9 @@ export default function OrderUpdateForm(props) {
               label="state"
               error={errors.partno}
             >
-              <option aria-label="None" value={0} />
+              <option value={0} defaultValue={0}>
+                0
+              </option>
               <option value={1}>1</option>
               <option value={2}>2</option>
               <option value={3}>3</option>
@@ -739,6 +643,7 @@ export default function OrderUpdateForm(props) {
             name="Totalboxes"
             value={values.Totalboxes}
             onChange={handleInputChange}
+            error={errors.Totalboxes}
           />
           <Autocomplete
             // disablePortal
@@ -752,31 +657,11 @@ export default function OrderUpdateForm(props) {
                 {...params}
                 label="Bkno"
                 name="Bkno"
-                error={bknoCheck ? "This field is required" : ""}
+                error={!bknoCheck ? "This field is required" : ""}
               />
             )}
           />
 
-          {/* <FormControl variant="outlined" className={classes.formControl}>
-            <InputLabel htmlFor="outlined-age-native-simple">BK NO</InputLabel>
-            <Select
-              native
-              name="bkno"
-              value={values.bkno}
-              onChange={handleInputChange}
-              label="bkno"
-            >
-              <option aria-label="None" value="" />
-              {bknoData.map((val, index) => {
-                return (
-                  <option value={val.bkno} key={val._id}>
-                    {val.bkno}
-                  </option>
-                );
-              })}
-            </Select>
-          </FormControl>
-           */}
           <Controls.Input
             label="Notes"
             name="Notes"
@@ -803,10 +688,14 @@ export default function OrderUpdateForm(props) {
                 setOrderNameAutoComplete(props.updateRowData.ordername);
                 setStateNameAutoComplete(props.updateRowData.state);
                 setBknoAutoComplete(props.updateRowData.BKNO);
-
                 setSelectedDate(props.updateRowData.date);
                 setAvailabilityDate(props.updateRowData.availabilityDate);
                 setDeliveryDate(props.updateRowData.deliveryDate);
+                setProductNameCheck(true);
+                setCustomerNameCheck(true);
+                setOrderNameCheck(true);
+                setStateNameCheck(true);
+                setBknoCheck(true);
               }}
             />
           </div>

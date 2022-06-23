@@ -161,52 +161,54 @@ export default function OrderForm(props) {
       }
       setOnlyStates(temp);
     });
-    setBknoCheck(false);
-    setStateNameCheck(false);
-    setOrderNameCheck(false);
-    setCustomerNameCheck(false);
-    setProductNameCheck(false);
+    // setBknoCheck(false);
+    // setStateNameCheck(false);
+    // setOrderNameCheck(false);
+    // setCustomerNameCheck(false);
+    // setProductNameCheck(false);
   }, []);
 
   const handleProductNameChange = (event, value) => {
     if (value) {
-      setProductNameCheck(false);
-      settingCostToProduct(value);
-    } else {
       setProductNameCheck(true);
+      settingCostToProduct(value);
+      setErrors({ ...errors, cost: "" });
+    } else {
+      setProductNameCheck(false);
+      setCostValueForProduct("");
     }
     setProductNameAutoComplete(value);
   };
   const handleCustomerNameChange = (event, value) => {
     if (value) {
-      setCustomerNameCheck(false);
-    } else {
       setCustomerNameCheck(true);
+    } else {
+      setCustomerNameCheck(false);
     }
     setCustomerNameAutoComplete(value);
   };
   const handleOrderNameChange = (event, value) => {
     if (value) {
-      setOrderNameCheck(false);
-    } else {
       setOrderNameCheck(true);
+    } else {
+      setOrderNameCheck(false);
     }
     setOrderNameAutoComplete(value);
   };
   const handleStateNameChange = (event, value) => {
     if (value) {
-      setStateNameCheck(false);
-    } else {
       setStateNameCheck(true);
+    } else {
+      setStateNameCheck(false);
     }
     setStateNameAutoComplete(value);
   };
   const handleBknoChange = (event, value) => {
-    if (value) {
-      setBknoCheck(false);
-    } else {
-      setBknoCheck(true);
-    }
+    // if (value) {
+    //   setBknoCheck(true);
+    // } else {
+    //   setBknoCheck(false);
+    // }
     setBknoAutoComplete(value);
   };
 
@@ -266,6 +268,10 @@ export default function OrderForm(props) {
       ...temp,
     });
 
+    if (!productNameAutoComplete) {
+      setProductNameCheck(false);
+    }
+
     if (
       productNameAutoComplete &&
       fieldValues.QNT &&
@@ -317,6 +323,16 @@ export default function OrderForm(props) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!lock) {
+      if (!customerNameAutoComplete) {
+        setCustomerNameCheck(false);
+      }
+      if (!orderNameAutoComplete) {
+        setOrderNameCheck(false);
+      }
+
+      if (!stateNameAutoComplete) {
+        setStateNameCheck(false);
+      }
       if (validate()) {
         setLock(true);
         console.log("sending the data");
@@ -398,42 +414,43 @@ export default function OrderForm(props) {
                 {...params}
                 label="Product Name"
                 name="Product Name"
-                error={productNameCheck ? "This field is required" : ""}
+                error={productNameCheck ? "" : "This field is required"}
               />
             )}
           />
-          {/* <FormControl variant="outlined" className={classes.formControl}>
-            <InputLabel htmlFor="outlined-age-native-simple">
-              Product Name
-            </InputLabel>
-            <Select
-              native
-              name="ProductName"
-              value={values.ProductName}
-              onChange={(e) => {
-                handleInputChange(e);
-                settingCostToProduct(e);
-              }}
-              label="Product Name"
-              error={errors.ProductName}
-            >
-              <option aria-label="None" value="" />
-              {productNameData.map((val, index) => {
-                return (
-                  <option value={val.productName} key={val._id}>
-                    {val.productName}
-                  </option>
-                );
-              })}
-            </Select>
-          </FormControl> */}
 
           <Controls.Input
             type="Number"
             label="QNT"
             name="QNT"
             value={values.QNT}
-            onChange={handleInputChange}
+            onChange={(e) => {
+              handleInputChange(e);
+              if (e.target.value && productNameAutoComplete) {
+                setErrors({
+                  ...errors,
+                  ["total"]: "",
+                  ["TotalSize"]: "",
+                  ["Totalboxes"]: "",
+                  ["QNT"]: "",
+                });
+              } else {
+                // setErrors({
+                //   ...errors,
+                //   total: "This field is required",
+                //   TotalSize: "This field is required",
+                //   Totalboxes: "This field is required",
+                //   QNT: "This field is required",
+                // });
+                setValues({
+                  ...values,
+                  total: "",
+                  TotalSize: "",
+                  Totalboxes: "",
+                  QNT: "",
+                });
+              }
+            }}
             error={errors.QNT}
           />
           <Controls.Input
@@ -457,33 +474,10 @@ export default function OrderForm(props) {
                 {...params}
                 label="Customer"
                 name="Customer"
-                error={customerNameCheck ? "This field is required" : ""}
+                error={!customerNameCheck ? "This field is required" : ""}
               />
             )}
           />
-
-          {/* <FormControl variant="outlined" className={classes.formControl}>
-            <InputLabel htmlFor="outlined-age-native-simple">
-              Customer
-            </InputLabel>
-            <Select
-              native
-              name="Customer"
-              value={values.Customer}
-              onChange={handleInputChange}
-              label="Customer"
-              error={errors.ProductName}
-            >
-              <option aria-label="None" value="" />
-              {customerNameData.map((val, index) => {
-                return (
-                  <option value={val.customer} key={val._id}>
-                    {val.customer}
-                  </option>
-                );
-              })}
-            </Select>
-          </FormControl> */}
 
           <Autocomplete
             // disablePortal
@@ -497,41 +491,10 @@ export default function OrderForm(props) {
                 {...params}
                 label="Order"
                 name="Order"
-                error={orderNameCheck ? "This field is required" : ""}
+                error={!orderNameCheck ? "This field is required" : ""}
               />
             )}
           />
-
-          {/* <FormControl variant="outlined" className={classes.formControl}>
-            <InputLabel htmlFor="outlined-age-native-simple">
-              Select Order Name
-            </InputLabel>
-            <Select
-              native
-              name="OrderName"
-              value={values.OrderName}
-              onChange={handleInputChange}
-              label="Order Name"
-              error={errors.OrderName}
-            >
-              <option aria-label="None" value="" />
-              {orderNameData.map((val, index) => {
-                return (
-                  <option value={val.order} key={val._id}>
-                    {val.order}
-                  </option>
-                );
-              })}
-            </Select>
-          </FormControl> */}
-
-          {/* <Controls.Input
-            label="Order Name"
-            name="OrderName"
-            value={values.OrderName}
-            onChange={handleInputChange}
-            error={errors.OrderName}
-          /> */}
 
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Grid container justifyContent="space-around">
@@ -563,31 +526,10 @@ export default function OrderForm(props) {
                 {...params}
                 label="state"
                 name="state"
-                error={stateNameCheck ? "This field is required" : ""}
+                error={!stateNameCheck ? "This field is required" : ""}
               />
             )}
           />
-
-          {/* <FormControl variant="outlined" className={classes.formControl}>
-            <InputLabel htmlFor="outlined-age-native-simple">state</InputLabel>
-            <Select
-              native
-              name="state"
-              value={values.state}
-              onChange={handleInputChange}
-              label="state"
-              error={errors.state}
-            >
-              <option aria-label="None" value="" />
-              {stateData.map((val, index) => {
-                return (
-                  <option value={val.state} key={val._id}>
-                    {val.state}
-                  </option>
-                );
-              })}
-            </Select>
-          </FormControl> */}
 
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Grid container justifyContent="space-around">
@@ -658,7 +600,9 @@ export default function OrderForm(props) {
               label="state"
               error={errors.partno}
             >
-              <option aria-label="None" value={0} defaultValue={0} />
+              <option value={0} defaultValue={0}>
+                0
+              </option>
               <option value={1}>1</option>
               <option value={2}>2</option>
               <option value={3}>3</option>
@@ -688,6 +632,7 @@ export default function OrderForm(props) {
             name="Totalboxes"
             value={values.Totalboxes}
             onChange={handleInputChange}
+            error={errors.Totalboxes}
           />
           <Autocomplete
             // disablePortal
@@ -701,31 +646,11 @@ export default function OrderForm(props) {
                 {...params}
                 label="Bkno"
                 name="Bkno"
-                error={bknoCheck ? "This field is required" : ""}
+                error={!bknoCheck ? "This field is required" : ""}
               />
             )}
           />
 
-          {/* <FormControl variant="outlined" className={classes.formControl}>
-            <InputLabel htmlFor="outlined-age-native-simple">BK NO</InputLabel>
-            <Select
-              native
-              name="bkno"
-              value={values.bkno}
-              onChange={handleInputChange}
-              label="bkno"
-            >
-              <option aria-label="None" value="" />
-              {bknoData.map((val, index) => {
-                return (
-                  <option value={val.bkno} key={val._id}>
-                    {val.bkno}
-                  </option>
-                );
-              })}
-            </Select>
-          </FormControl>
-           */}
           <Controls.Input
             label="Notes"
             name="Notes"
@@ -752,9 +677,14 @@ export default function OrderForm(props) {
                 setOrderNameAutoComplete("");
                 setStateNameAutoComplete("");
                 setBknoAutoComplete("");
+                setProductNameCheck(true);
+                setCustomerNameCheck(true);
+                setOrderNameCheck(true);
+                setStateNameCheck(true);
+                setBknoCheck(true);
                 setSelectedDate(new Date());
-                setAvailabilityDate(new Date());
-                setDeliveryDate(new Date());
+                setAvailabilityDate(null);
+                setDeliveryDate(null);
               }}
             />
           </div>
